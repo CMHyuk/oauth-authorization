@@ -4,6 +4,7 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+
 elasticsearch:
   host: ${ELASTIC_HOST:localhost}
   port: ${ELASTIC_PORT:9200}
@@ -15,8 +16,5 @@ elasticsearch:
   keep-alive-strategy-time-minutes: ${ELASTIC_KEEP_ALIVE_STRATEGY_TIME_MIN:5}
   scheme: http
 
-client:
-  id: oauth-client-id
-  secret: oauth-client-secret
-  redirectUrl: http://10.10.30.19:9000/oauth/login-call-back
-  tenantId: 665092d1-905e-42db-a69b-e977952e8471
+server:
+  port: 9000
