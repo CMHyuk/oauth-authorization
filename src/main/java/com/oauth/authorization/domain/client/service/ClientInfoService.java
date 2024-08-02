@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,7 +50,8 @@ public class ClientInfoService implements RegisteredClientRepository {
                 .clientName(clientInfo.getClientName())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .redirectUri(clientInfo.getRegisteredRedirectUri());
+                .redirectUri(clientInfo.getRegisteredRedirectUri())
+                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build());
 
         for (String scope : scopes) {
             builder.scope(scope);
