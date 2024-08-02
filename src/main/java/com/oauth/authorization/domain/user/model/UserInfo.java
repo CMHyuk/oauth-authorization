@@ -29,20 +29,4 @@ public class UserInfo {
 
     @Enumerated(value = EnumType.STRING)
     private Set<UserRole> role;
-
-    public UserInfo(String tenantId, String username, String userId, String email, String password, Set<UserRole> role) {
-        this.tenantId = tenantId;
-        this.username = username;
-        this.userId = userId;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public void update(String username, String userId, String email, String password) {
-        this.username = username;
-        this.userId = userId;
-        this.email = email;
-        this.password = password;
-    }
 }
