@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -13,14 +12,13 @@ public class LoginController {
 
     private final LoginService loginService;
 
-//    @GetMapping("/login")
-//    public String signIn() {
-//        return "login";
-//    }
-//
-//    @PostMapping("/login")
-//    @ResponseBody
-//    public String ok() {
-//        return "ok";
-//    }
+    @GetMapping("/oauth2/sign-in")
+    public String signIn() {
+        return "login";
+    }
+
+    @PostMapping("/oauth/sign-in")
+    public String ok() {
+        return "home";
+    }
 }

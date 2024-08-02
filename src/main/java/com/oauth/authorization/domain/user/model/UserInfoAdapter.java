@@ -21,6 +21,8 @@ public class UserInfoAdapter extends User {
     }
 
     private static Collection<? extends GrantedAuthority> authorities(Set<UserRole> roles) {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toSet());
     }
 }
