@@ -12,9 +12,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientInfoQueryRepository {
 
+    private static final String ID_KEYWORD = "id.keyword";
     private static final String CLIENT_ID_KEYWORD = "clientId.keyword";
 
     private final ClientInfoRepository clientInfoRepository;
+
+    public Optional<ClientInfo> findById(String id) {
+        BoolQueryBuilder query = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery(ID_KEYWORD, id));
+        ClientInfo clientInfo = clientInfoRepository.find(null, query);
+        return Optional.ofNullable(clientInfo);
+    }
 
     public Optional<ClientInfo> findByClientId(String clientId) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
