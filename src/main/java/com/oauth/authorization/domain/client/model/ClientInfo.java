@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -29,28 +29,11 @@ public class ClientInfo {
     private String clientName;
     private String clientId;
     private String clientSecret;
-    private String registeredRedirectUri;
     private Integer accessTokenValiditySeconds;
 
     @ElementCollection
-    private List<String> scope = new ArrayList<>();
+    private Set<String> registeredRedirectUris = new HashSet<>();
 
-    public ClientInfo(String tenantId, String clientName, String clientId, String clientSecret, String registeredRedirectUri, List<String> scope) {
-        this.tenantId = tenantId;
-        this.clientName = clientName;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.registeredRedirectUri = registeredRedirectUri;
-        this.scope = scope;
-        this.accessTokenValiditySeconds = VALIDITY_SECONDS;
-    }
-
-    public void update(String clientName, String clientId, String clientSecret, String registeredRedirectUri, Integer accessTokenValiditySeconds, List<String> scope) {
-        this.clientName = clientName;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.registeredRedirectUri = registeredRedirectUri;
-        this.accessTokenValiditySeconds = accessTokenValiditySeconds;
-        this.scope = scope;
-    }
+    @ElementCollection
+    private Set<String> scopes = new HashSet<>();
 }

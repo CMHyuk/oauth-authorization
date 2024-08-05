@@ -19,8 +19,8 @@ public class RegisteredClientMapper {
                 .clientName(clientInfo.getClientName())
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-                .scopes((scopes) -> scopes.addAll(clientInfo.getScope()))
-                .redirectUri(clientInfo.getRegisteredRedirectUri())
+                .scopes(scopes -> scopes.addAll(clientInfo.getScopes()))
+                .redirectUris(redirectUris -> redirectUris.addAll(clientInfo.getRegisteredRedirectUris()))
                 .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
                 .build();
     }

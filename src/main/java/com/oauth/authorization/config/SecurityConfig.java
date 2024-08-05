@@ -37,7 +37,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/login", "oauth2/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
