@@ -64,8 +64,6 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
                                      ElasticsearchOperations operations, ElasticSearchSetting elasticSearchSetting, ElasticSearchIndexAlias elasticSearchIndexAlias) {
         this.elasticSearchSetting = elasticSearchSetting;
         this.elasticSearchIndexAlias = elasticSearchIndexAlias;
-
-        // SimpleElasticsearchRepository 를 상속받는 대신 SimpleElasticsearchRepository 에서 저장하는 데이터를 그대로 저장해서 사용한다.
         this.operations = operations;
         this.entityInformation = entityInformation;
         this.entityClass = this.entityInformation.getJavaType();
@@ -89,8 +87,8 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
         return (List<S>) save;
     }
 
-    public void delete(String companyId, T entity) {
-        var indexCoordinates = this.getIndexCoordinates(companyId, false);
+    public void delete(String tenantId, T entity) {
+        var indexCoordinates = this.getIndexCoordinates(tenantId, false);
         this.operations.delete(entity, indexCoordinates);
         this.doRefresh(indexCoordinates);
     }
@@ -391,12 +389,12 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
      * Description: index 를 생성하고 field mapping 을 수행한다.
      * index 생성 규칙은 indexName_{companyIdLowerCase} 이다.
      *
-     * @param companyId 회사 아이디
+     * @param tenantId 회사 아이디
      */
-    private IndexOperations createIndexWithMapping(String companyId) {
+    private IndexOperations createIndexWithMapping(String tenantId) {
 
         // 인덱스 생성을 위해 namespace 가 존재하던 말던 무조건 oauth_company_{companyIdLowerCase}로 생성한다.
-        var indexCoordinates = IndexCoordinates.of(getIndexName(companyId));
+        var indexCoordinates = IndexCoordinates.of(getIndexName(tenantId));
         IndexOperations indexOps = this.operations.indexOps(indexCoordinates);
 
         Map<String, Object> settings = this.elasticSearchSetting.get();
@@ -411,10 +409,10 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
     /**
      * namespace 가 존재하는 경우에만 alias 를 생성한다.
      *
-     * @param companyId 회사 아아디
+     * @param tenantId 회사 아아디
      * @param indexOps  IndexCoordinates 를 통해 얻은 IndexOperation
      */
-    private void createAlias(String companyId, IndexOperations indexOps) {
+    private void createAlias(String tenantId, IndexOperations indexOps) {
         if (this.elasticSearchIndexAlias.hasNamespace()) {
 
             var aliasActions = new AliasActions();
@@ -422,7 +420,7 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
                     new AliasAction.Add(
                             AliasActionParameters.builder()
                                     .withIndices(indexOps.getIndexCoordinates().getIndexName())
-                                    .withAliases(this.getIndexNameWithAlias(companyId))
+                                    .withAliases(this.getIndexNameWithAlias(tenantId))
                                     .build()
                     )
             );
@@ -455,14 +453,14 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
 
 
     /**
-     * @param companyId 회사 아이디
+     * @param tenantId 회사 아이디
      * @return model class 에서 indexName 의 * 를 제거하고 companyId를 붙인 정확한 인덱스 이름을 리턴한다.
      */
-    private String getIndexName(String companyId) {
+    private String getIndexName(String tenantId) {
         String indexName = this.getIndexNameFromEntityWithoutAsterisk();
 
         // 파라미터로 넘어온 companyId의 소문자를 붙여서 리턴한다.
-        return MessageFormat.format("{0}{1}", indexName, companyId.toLowerCase());
+        return MessageFormat.format("{0}{1}", indexName, tenantId.toLowerCase());
     }
 
 
@@ -470,15 +468,15 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
      * properties 파일에 namespace 가 설정된 경우 indexName_{namespace}_{companyIdLowerCase} 규칙으로 생성한다.
      * 없는 경우 indexName_{companyIdLowerCase}만 리턴된다.
      *
-     * @param companyId 회사 아이디
+     * @param tenantId 회사 아이디
      * @return model class 에서 indexName 의 * 를 제거하고 namespace 와 companyId를 붙인 alias 를 리턴한다.
      * <p>
      */
-    private String getIndexNameWithAlias(String companyId) {
+    private String getIndexNameWithAlias(String tenantId) {
         String indexName = this.getIndexNameFromEntityWithoutAsterisk();
 
         // alias 규칙은 indexName_{namespace}_{companyIdLowerCase} 이다.
-        return MessageFormat.format("{0}{1}{2}", indexName, this.elasticSearchIndexAlias.getNamespace(), companyId.toLowerCase());
+        return MessageFormat.format("{0}{1}{2}", indexName, this.elasticSearchIndexAlias.getNamespace(), tenantId.toLowerCase());
     }
 
 
@@ -505,8 +503,8 @@ public class CustomAwareRepositoryImpl<T, ID> implements CustomAwareRepository<T
     }
 
 
-    private void deleteAllById(String companyId, Iterable<? extends ID> ids) {
-        var indexCoordinates = this.getIndexCoordinates(companyId, false);
+    private void deleteAllById(String tenantId, Iterable<? extends ID> ids) {
+        var indexCoordinates = this.getIndexCoordinates(tenantId, false);
 
         var idsQueryBuilder = QueryBuilders.idsQuery();
 

@@ -1,6 +1,5 @@
 package com.oauth.authorization.domain.tenant.model;
 
-import com.oauth.authorization.global.exception.BusinessException;
 import com.oauth.authorization.global.util.References;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -8,9 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
-
-import static com.oauth.authorization.domain.tenant.exception.TenantErrorCode.INVALID_MASTER_TENANT_NAME_REQUEST;
-
 
 @Entity
 @Getter
@@ -28,17 +24,4 @@ public class TenantInfo {
     private String tenantName;
     private byte[] tenantRSAPrivateKey;
     private byte[] tenantRSAPublicKey;
-
-    public static TenantInfo createMasterTenant(String tenantName, byte[] tenantRSAPrivateKey, byte[] tenantRSAPublicKey) {
-        if (!tenantName.equals(MASTER_TENANT)) {
-            throw BusinessException.from(INVALID_MASTER_TENANT_NAME_REQUEST);
-        }
-        return new TenantInfo(MASTER_TENANT, tenantRSAPrivateKey, tenantRSAPublicKey);
-    }
-
-    public TenantInfo(String tenantName, byte[] tenantRSAPrivateKey, byte[] tenantRSAPublicKey) {
-        this.tenantName = tenantName;
-        this.tenantRSAPrivateKey = tenantRSAPrivateKey;
-        this.tenantRSAPublicKey = tenantRSAPublicKey;
-    }
 }
