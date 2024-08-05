@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public class UserInfoAdapter extends User {
 
     private static final long serialVersionUID = 1L;
-    private UserInfo userInfo;
+    private final UserInfo userInfo;
 
     public UserInfoAdapter(UserInfo userInfo) {
         super(userInfo.getUserId(), userInfo.getPassword(), authorities(userInfo.getRole()));
