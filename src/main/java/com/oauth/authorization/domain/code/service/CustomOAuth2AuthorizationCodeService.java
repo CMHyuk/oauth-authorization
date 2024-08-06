@@ -65,10 +65,6 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
         }
     }
 
-    private static boolean isComplete(OAuth2Authorization authorization) {
-        return authorization.getAccessToken() != null;
-    }
-
     @Override
     public void remove(OAuth2Authorization authorization) {
         String id = authorization.getId();
@@ -90,6 +86,10 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
         OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findByToken(token, tokenType.getValue())
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
         return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
+    }
+
+    private static boolean isComplete(OAuth2Authorization authorization) {
+        return authorization.getAccessToken() != null;
     }
 
     private void redirectToClient(String redirectUri, String code, String state) {
