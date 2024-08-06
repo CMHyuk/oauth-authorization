@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OAuthAuthorizationCodeQueryRepository {
 
-    private static final String ID_KEYWORD = "id.keyword";
+    private static final String ID_KEYWORD = "_id";
 
     private final OAuthAuthorizationCodeRepository oauthAuthorizationCodeRepository;
 

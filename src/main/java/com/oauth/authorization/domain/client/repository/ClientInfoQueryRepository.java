@@ -12,7 +12,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ClientInfoQueryRepository {
 
-    private static final String TENANT_ID_KEYWORD = "tenantId.keyword";
     private static final String CLIENT_ID_KEYWORD = "clientId.keyword";
     private static final String ID_KEYWORD = "_id";
 
@@ -30,11 +29,5 @@ public class ClientInfoQueryRepository {
                 .filter(QueryBuilders.termQuery(CLIENT_ID_KEYWORD, clientId));
         ClientInfo clientInfo = clientInfoRepository.find(null, query);
         return Optional.ofNullable(clientInfo);
-    }
-
-    public Optional<ClientInfo> find(String tenantId) {
-        BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termQuery(TENANT_ID_KEYWORD, tenantId));
-        return Optional.ofNullable(clientInfoRepository.find(tenantId, query));
     }
 }
