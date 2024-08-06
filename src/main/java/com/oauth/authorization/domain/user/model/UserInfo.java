@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Getter
@@ -16,7 +17,9 @@ import java.util.Set;
 @Entity
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_USER + "*", createIndex = false)
 @SuppressWarnings("JpaAttributeTypeInspection")
-public class UserInfo {
+public class UserInfo implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     private String id;

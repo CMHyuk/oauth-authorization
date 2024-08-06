@@ -15,6 +15,8 @@ import org.springframework.data.elasticsearch.annotations.Setting;
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 public class ElasticSearchAccessToken {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
     private String id;
 

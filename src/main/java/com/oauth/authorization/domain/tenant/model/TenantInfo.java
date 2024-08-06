@@ -8,14 +8,17 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
+import java.io.Serializable;
+
 @Entity
 @Getter
 @NoArgsConstructor
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_COMPANY + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 @SuppressWarnings("squid:S1948")
-public class TenantInfo {
+public class TenantInfo implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private static final String MASTER_TENANT = "master";
 
     @Id
