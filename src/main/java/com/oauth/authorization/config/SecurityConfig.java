@@ -44,8 +44,6 @@ public class SecurityConfig {
                         formLogin.loginPage("/login")
                 )
                 .csrf(AbstractHttpConfigurer::disable);
-
-
         return http.build();
     }
 

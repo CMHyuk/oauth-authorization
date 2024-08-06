@@ -20,17 +20,19 @@ public class OAuthAuthorizationCode implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    private Long id;
+    private String id;
 
+    private String tokenValue;
     private String code;
     private String state;
     private String authentication;
 
-    public static OAuthAuthorizationCode create(String code, String state, String authentication) {
-        return new OAuthAuthorizationCode(code, state, authentication);
+    public static OAuthAuthorizationCode create(String token, String code, String state, String authentication) {
+        return new OAuthAuthorizationCode(token, code, state, authentication);
     }
 
-    public OAuthAuthorizationCode(String code, String state, String authentication) {
+    public OAuthAuthorizationCode(String tokenValue, String code, String state, String authentication) {
+        this.tokenValue = tokenValue;
         this.code = code;
         this.state = state;
         this.authentication = authentication;

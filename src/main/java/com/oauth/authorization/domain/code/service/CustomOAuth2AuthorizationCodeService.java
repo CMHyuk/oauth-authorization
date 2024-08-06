@@ -26,6 +26,8 @@ import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -39,21 +41,32 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
 
     @Override
     public void save(OAuth2Authorization authorization) {
-        String code = generateAuthorizationCode();
-        String tenantId = getTenantId(authorization);
-        ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
+        if (!isComplete(authorization)) {
+            String code = generateAuthorizationCode();
+            String tenantId = getTenantId(authorization);
+            ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
 
-        String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
-        String state = authorization.getAttribute("state");
+            String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
+            String state = authorization.getAttribute("state");
 
-        oAuthAuthorizationCodeRepository.save(tenantId,
-                OAuthAuthorizationCode.create(
-                        code,
-                        state,
-                        SerializableObjectConverter.serialize(authorization)
-                )
-        );
-        redirectToClient(redirectUri, code, state);
+            OAuth2Authorization updatedAuthorization = OAuth2Authorization.from(authorization)
+                    .token(new OAuth2AuthorizationCode(code, Instant.now(), Instant.now().plus(5, ChronoUnit.MINUTES)))
+                    .build();
+
+            oAuthAuthorizationCodeRepository.save(tenantId,
+                    OAuthAuthorizationCode.create(
+                            updatedAuthorization.getToken(OAuth2AuthorizationCode.class).getToken().getTokenValue(),
+                            code,
+                            state,
+                            SerializableObjectConverter.serialize(updatedAuthorization)
+                    )
+            );
+            redirectToClient(redirectUri, code, state);
+        }
+    }
+
+    private static boolean isComplete(OAuth2Authorization authorization) {
+        return authorization.getAccessToken() != null;
     }
 
     @Override
@@ -74,10 +87,7 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
-        if (tokenType.equals(OAuth2TokenType.ACCESS_TOKEN)) {
-
-        }
-        OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findByToken(token)
+        OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findByToken(token, tokenType.getValue())
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
         return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
     }

@@ -13,7 +13,9 @@ import java.util.Optional;
 public class OAuthAuthorizationCodeQueryRepository {
 
     private static final String ID_KEYWORD = "_id";
-    private static final String STATE_KEYWORD = "state_keyword";
+    private static final String STATE_KEYWORD = "state.keyword";
+    private static final String CODE_KEYWORD = "code.keyword";
+    private static final String ACCESS_TOKEN_KEYWORD = "tokenValue.keyword";
 
     private final OAuthAuthorizationCodeRepository oauthAuthorizationCodeRepository;
 
@@ -24,9 +26,20 @@ public class OAuthAuthorizationCodeQueryRepository {
         return Optional.ofNullable(oAuthAuthorizationCode);
     }
 
-    public Optional<OAuthAuthorizationCode> findByToken(String token) {
-        BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termQuery(STATE_KEYWORD, token));
+    public Optional<OAuthAuthorizationCode> findByToken(String token, String tokenType) {
+        BoolQueryBuilder query = null;
+        if (tokenType.equals("state")) {
+            query = QueryBuilders.boolQuery()
+                    .filter(QueryBuilders.termQuery(STATE_KEYWORD, token));
+        }
+        if (tokenType.equals("code")) {
+            query = QueryBuilders.boolQuery()
+                    .filter(QueryBuilders.termQuery(CODE_KEYWORD, token));
+        }
+        if (tokenType.equals("access_token")) {
+            query = QueryBuilders.boolQuery()
+                    .filter(QueryBuilders.termQuery(ACCESS_TOKEN_KEYWORD, token));
+        }
         OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
         return Optional.ofNullable(oAuthAuthorizationCode);
     }
