@@ -23,10 +23,16 @@ public class OAuthAuthorizationCode implements Serializable {
     private Long id;
 
     private String code;
+    private String state;
     private String authentication;
 
-    public OAuthAuthorizationCode(String code, String authentication) {
+    public static OAuthAuthorizationCode create(String code, String state, String authentication) {
+        return new OAuthAuthorizationCode(code, state, authentication);
+    }
+
+    public OAuthAuthorizationCode(String code, String state, String authentication) {
         this.code = code;
+        this.state = state;
         this.authentication = authentication;
     }
 }

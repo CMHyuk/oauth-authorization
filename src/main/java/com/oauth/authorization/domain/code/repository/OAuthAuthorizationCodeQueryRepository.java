@@ -13,7 +13,7 @@ import java.util.Optional;
 public class OAuthAuthorizationCodeQueryRepository {
 
     private static final String ID_KEYWORD = "_id";
-    private static final String CODE_KEYWORD = "code";
+    private static final String STATE_KEYWORD = "state_keyword";
 
     private final OAuthAuthorizationCodeRepository oauthAuthorizationCodeRepository;
 
@@ -24,9 +24,9 @@ public class OAuthAuthorizationCodeQueryRepository {
         return Optional.ofNullable(oAuthAuthorizationCode);
     }
 
-    public Optional<OAuthAuthorizationCode> findByCode(String code) {
+    public Optional<OAuthAuthorizationCode> findByToken(String token) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termQuery(CODE_KEYWORD, code));
+                .filter(QueryBuilders.termQuery(STATE_KEYWORD, token));
         OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
         return Optional.ofNullable(oAuthAuthorizationCode);
     }

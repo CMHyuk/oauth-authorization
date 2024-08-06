@@ -4,6 +4,7 @@ import com.oauth.authorization.domain.client.exception.ClientErrorCode;
 import com.oauth.authorization.domain.client.mapper.RegisteredClientMapper;
 import com.oauth.authorization.domain.client.model.ClientInfo;
 import com.oauth.authorization.domain.client.repository.ClientInfoQueryRepository;
+import com.oauth.authorization.domain.code.exception.OAuthAuthorizationCodeErrorCode;
 import com.oauth.authorization.domain.code.model.OAuthAuthorizationCode;
 import com.oauth.authorization.domain.code.repository.OAuthAuthorizationCodeQueryRepository;
 import com.oauth.authorization.domain.code.repository.OAuthAuthorizationCodeRepository;
@@ -33,7 +34,6 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
     private final OAuthAuthorizationCodeQueryRepository oAuthAuthorizationCodeQueryRepository;
     private final OAuthAuthorizationCodeRepository oAuthAuthorizationCodeRepository;
     private final ClientInfoQueryRepository clientInfoRepository;
-    private final RegisteredClientMapper registeredClientMapper;
     private final HttpServletResponse httpServletResponse;
     private final UserInfoService userInfoService;
 
@@ -41,19 +41,19 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
     public void save(OAuth2Authorization authorization) {
         String code = generateAuthorizationCode();
         String tenantId = getTenantId(authorization);
+        ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
 
-        String id = authorization.getRegisteredClientId();
-        ClientInfo clientInfo = clientInfoRepository.findById(id)
-                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
         String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
+        String state = authorization.getAttribute("state");
 
-        oAuthAuthorizationCodeRepository.save(tenantId, new OAuthAuthorizationCode(code, SerializableObjectConverter.serialize(authorization)));
-        try {
-            String redirectUrl = redirectUri + "?code=" + code + "&state=" + authorization.getAttribute("state");
-            httpServletResponse.sendRedirect(redirectUrl);
-        } catch (IOException e) {
-            throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
-        }
+        oAuthAuthorizationCodeRepository.save(tenantId,
+                OAuthAuthorizationCode.create(
+                        code,
+                        state,
+                        SerializableObjectConverter.serialize(authorization)
+                )
+        );
+        redirectToClient(redirectUri, code, state);
     }
 
     @Override
@@ -66,44 +66,34 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
     }
 
     @Override
-    @Deprecated
     public OAuth2Authorization findById(String id) {
-        ClientInfo clientInfo = clientInfoRepository.findById(id)
-                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
-        String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
-
-        return null;
+        OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findById(id)
+                .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
+        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
-//        ClientInfo clientInfo = clientInfoRepository.findById(id)
-//                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
-//        String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
-//
-//        return oAuthAuthorizationCodeQueryRepository.findByCode(token)
-//                .map(code -> {
-//                    return OAuth2Authorization.withRegisteredClient(registeredClientMapper.toRegisteredClient(clientInfo))
-//                            .principalName(code.getUsername())
-//                            .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
-//                            .attribute(OAuth2ParameterNames.REDIRECT_URI, code.getRedirectUri())
-//                            .authorizationCode(new OAuth2AuthorizationCode(code.getCode(), code.getIssuedAt(), code.getExpiresAt()))
-//                            .build();
-//                })
-//                .orElse(null);
-        return null;
+        if (tokenType.equals(OAuth2TokenType.ACCESS_TOKEN)) {
+
+        }
+        OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findByToken(token)
+                .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
+        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
     }
 
-    private OAuth2Authorization convertToOAuth2Authorization(OAuth2Authorization oAuth2Authorization) {
-        ClientInfo clientInfo = clientInfoRepository.findById(oAuth2Authorization.getId())
-                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
-        String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
+    private void redirectToClient(String redirectUri, String code, String state) {
+        try {
+            String redirectUrl = String.format("%s?code=%s&state=%s", redirectUri, code, state);
+            httpServletResponse.sendRedirect(redirectUrl);
+        } catch (IOException e) {
+            throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
+        }
+    }
 
-        return OAuth2Authorization.withRegisteredClient(registeredClientMapper.toRegisteredClient(clientInfo))
-                .principalName(oAuth2Authorization.getPrincipalName())
-                .authorizationGrantType(new AuthorizationGrantType("authorization_code"))
-                .attribute(OAuth2ParameterNames.REDIRECT_URI, redirectUri)
-                .build();
+    private ClientInfo getClientInfo(String id) {
+        return clientInfoRepository.findById(id)
+                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
     }
 
     private String generateAuthorizationCode() {
