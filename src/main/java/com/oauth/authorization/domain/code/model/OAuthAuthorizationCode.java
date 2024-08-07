@@ -24,19 +24,22 @@ public class OAuthAuthorizationCode implements Serializable {
 
     private String code;
     private String state;
+    private String authorizationId;
     private String authorization;
 
-    public static OAuthAuthorizationCode create(String code, String state, String authentication) {
-        return new OAuthAuthorizationCode(code, state, authentication);
+    public static OAuthAuthorizationCode create(String code, String state, String authorizationId, String authentication) {
+        return new OAuthAuthorizationCode(code, state, authorizationId, authentication);
     }
 
-    public OAuthAuthorizationCode(String code, String state, String authorization) {
+    public OAuthAuthorizationCode(String code, String state, String authorizationId, String authorization) {
         this.code = code;
         this.state = state;
+        this.authorizationId = authorizationId;
         this.authorization = authorization;
     }
 
-    public void updateAuthorization(String authorization) {
+    public void updateAuthorization(String code, String authorization) {
+        this.code = code;
         this.authorization = authorization;
     }
 }

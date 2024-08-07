@@ -16,12 +16,20 @@ public class OAuthAuthorizationCodeQueryRepository {
     private static final String STATE_KEYWORD = "state.keyword";
     private static final String CODE_KEYWORD = "code.keyword";
     private static final String ACCESS_TOKEN_KEYWORD = "tokenValue.keyword";
+    private static final String AUTHORIZATION_KEYWORD = "authorizationId.keyword";
 
     private final OAuthAuthorizationCodeRepository oauthAuthorizationCodeRepository;
 
     public Optional<OAuthAuthorizationCode> findById(String id) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
                 .filter(QueryBuilders.termQuery(ID_KEYWORD, id));
+        OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
+        return Optional.ofNullable(oAuthAuthorizationCode);
+    }
+
+    public Optional<OAuthAuthorizationCode> findByAuthorizationId(String authorizationId) {
+        BoolQueryBuilder query = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery(AUTHORIZATION_KEYWORD, authorizationId));
         OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
         return Optional.ofNullable(oAuthAuthorizationCode);
     }
