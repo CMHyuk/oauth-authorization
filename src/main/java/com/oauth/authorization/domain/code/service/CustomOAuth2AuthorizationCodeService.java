@@ -45,44 +45,19 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
     @Override
     public void save(OAuth2Authorization authorization) {
         String tenantId = getTenantId(authorization);
-
         if (!isComplete(authorization)) {
-            String code = generateAuthorizationCode();
-            ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
-            String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
-            String state = authorization.getAttribute("state");
-
-            OAuth2Authorization updatedAuthorization = OAuth2Authorization.from(authorization)
-                    .token(new OAuth2AuthorizationCode(code, Instant.now(), Instant.now().plus(5, ChronoUnit.MINUTES)))
-                    .build();
-
-            oAuthAuthorizationCodeRepository.save(tenantId,
-                    OAuthAuthorizationCode.create(
-                            updatedAuthorization.getToken(OAuth2AuthorizationCode.class).getToken().getTokenValue(),
-                            code,
-                            state,
-                            SerializableObjectConverter.serialize(updatedAuthorization)
-                    )
-            );
-            redirectToClient(redirectUri, code, state);
+            handleIncompleteAuthorization(authorization, tenantId);
         } else {
-            OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
-            String code = authorizationCode.getToken().getTokenValue();
-            oAuthAuthorizationCodeQueryRepository.findByCode(code)
-                    .ifPresent(oAuthAuthorizationCode -> {
-                        oAuthAuthorizationCode.update(SerializableObjectConverter.serialize(authorization));
-                        oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
-                    });
+            handleCompleteAuthorization(authorization, tenantId);
         }
     }
 
     @Override
     public void remove(OAuth2Authorization authorization) {
-        String id = authorization.getId();
+        String code = getCode(authorization);
         String tenantId = getTenantId(authorization);
-        OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findById(id)
-                .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
-        oAuthAuthorizationCodeRepository.delete(tenantId, oAuthAuthorizationCode);
+        oAuthAuthorizationCodeQueryRepository.findByCode(code)
+                .ifPresent(oAuthAuthorizationCode -> oAuthAuthorizationCodeRepository.delete(tenantId, oAuthAuthorizationCode));
     }
 
     @Override
@@ -101,6 +76,41 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
 
     private boolean isComplete(OAuth2Authorization authorization) {
         return authorization.getAccessToken() != null;
+    }
+
+    private void handleIncompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
+        String code = generateAuthorizationCode();
+        ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
+        String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
+        String state = authorization.getAttribute("state");
+
+        OAuth2Authorization updatedAuthorization = OAuth2Authorization.from(authorization)
+                .token(new OAuth2AuthorizationCode(code, Instant.now(), Instant.now().plus(5, ChronoUnit.MINUTES)))
+                .build();
+
+        OAuthAuthorizationCode oAuthAuthorizationCode = OAuthAuthorizationCode.create(
+                updatedAuthorization.getToken(OAuth2AuthorizationCode.class).getToken().getTokenValue(),
+                code,
+                state,
+                SerializableObjectConverter.serialize(updatedAuthorization)
+        );
+
+        oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
+        redirectToClient(redirectUri, code, state);
+    }
+
+    private void handleCompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
+        String code = getCode(authorization);
+        oAuthAuthorizationCodeQueryRepository.findByCode(code)
+                .ifPresent(oAuthAuthorizationCode -> {
+                    oAuthAuthorizationCode.update(SerializableObjectConverter.serialize(authorization));
+                    oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
+                });
+    }
+
+    private String getCode(OAuth2Authorization authorization) {
+        OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
+        return authorizationCode.getToken().getTokenValue();
     }
 
     private void redirectToClient(String redirectUri, String code, String state) {
