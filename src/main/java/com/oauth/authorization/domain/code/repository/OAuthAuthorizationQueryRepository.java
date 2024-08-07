@@ -1,6 +1,6 @@
 package com.oauth.authorization.domain.code.repository;
 
-import com.oauth.authorization.domain.code.model.OAuthAuthorizationCode;
+import com.oauth.authorization.domain.code.model.OAuth2Authorization;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -10,23 +10,23 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class OAuthAuthorizationCodeQueryRepository {
+public class OAuthAuthorizationQueryRepository {
 
     private static final String STATE_KEYWORD = "state.keyword";
     private static final String CODE_KEYWORD = "code.keyword";
     private static final String ACCESS_TOKEN_KEYWORD = "tokenValue.keyword";
     private static final String AUTHORIZATION_KEYWORD = "authorizationId.keyword";
 
-    private final OAuthAuthorizationCodeRepository oauthAuthorizationCodeRepository;
+    private final OAuthAuthorizationRepository oauthAuthorizationRepository;
 
-    public Optional<OAuthAuthorizationCode> findByAuthorizationId(String authorizationId) {
+    public Optional<OAuth2Authorization> findByAuthorizationId(String authorizationId) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
                 .filter(QueryBuilders.termQuery(AUTHORIZATION_KEYWORD, authorizationId));
-        OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
-        return Optional.ofNullable(oAuthAuthorizationCode);
+        OAuth2Authorization oAuth2Authorization = oauthAuthorizationRepository.find(null, query);
+        return Optional.ofNullable(oAuth2Authorization);
     }
 
-    public Optional<OAuthAuthorizationCode> findByToken(String token, String tokenType) {
+    public Optional<OAuth2Authorization> findByToken(String token, String tokenType) {
         BoolQueryBuilder query = null;
         if (tokenType.equals("state")) {
             query = QueryBuilders.boolQuery()
@@ -40,7 +40,7 @@ public class OAuthAuthorizationCodeQueryRepository {
             query = QueryBuilders.boolQuery()
                     .filter(QueryBuilders.termQuery(ACCESS_TOKEN_KEYWORD, token));
         }
-        OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
-        return Optional.ofNullable(oAuthAuthorizationCode);
+        OAuth2Authorization oAuth2Authorization = oauthAuthorizationRepository.find(null, query);
+        return Optional.ofNullable(oAuth2Authorization);
     }
 }
