@@ -65,30 +65,32 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
         String authorizationId = authorization.getId();
         oAuthAuthorizationCodeQueryRepository.findByAuthorizationId(authorizationId)
                 .ifPresentOrElse(
-                        oAuthAuthorizationCode -> {
-                            String code = getCode(authorization);
-                            oAuthAuthorizationCode.updateAuthorization(code, SerializableObjectConverter.serialize(authorization));
-                            oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
-                        },
-                        () -> {
-                            OAuthAuthorizationCode newOAuthAuthorizationCode = OAuthAuthorizationCode.create(
-                                    INITIAL_CODE,
-                                    authorization.getAttribute("state"),
-                                    authorizationId,
-                                    SerializableObjectConverter.serialize(authorization));
-                            oAuthAuthorizationCodeRepository.save(tenantId, newOAuthAuthorizationCode);
-                        }
+                        oAuthAuthorizationCode -> updateOAuth2Authorization(authorization, tenantId, oAuthAuthorizationCode),
+                        () -> saveNewOAuth2Authorization(authorization, tenantId, authorizationId)
                 );
+    }
+
+    private void saveNewOAuth2Authorization(OAuth2Authorization authorization, String tenantId, String authorizationId) {
+        OAuthAuthorizationCode newOAuthAuthorizationCode = OAuthAuthorizationCode.create(
+                INITIAL_CODE,
+                authorization.getAttribute("state"),
+                authorizationId,
+                SerializableObjectConverter.serialize(authorization));
+        oAuthAuthorizationCodeRepository.save(tenantId, newOAuthAuthorizationCode);
     }
 
     private void handleCompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
         String authorizationId = authorization.getId();
         oAuthAuthorizationCodeQueryRepository.findByAuthorizationId(authorizationId)
                 .ifPresent(oAuthAuthorizationCode -> {
-                    String code = getCode(authorization);
-                    oAuthAuthorizationCode.updateAuthorization(code, SerializableObjectConverter.serialize(authorization));
-                    oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
+                    updateOAuth2Authorization(authorization, tenantId, oAuthAuthorizationCode);
                 });
+    }
+
+    private void updateOAuth2Authorization(OAuth2Authorization authorization, String tenantId, OAuthAuthorizationCode oAuthAuthorizationCode) {
+        String code = getCode(authorization);
+        oAuthAuthorizationCode.updateAuthorization(code, SerializableObjectConverter.serialize(authorization));
+        oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
     }
 
     private String getCode(OAuth2Authorization authorization) {
