@@ -1,6 +1,6 @@
-package com.oauth.authorization.domain.code.repository;
+package com.oauth.authorization.domain.authorization.repository;
 
-import com.oauth.authorization.domain.code.model.CustomOAuth2Authorization;
+import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;

@@ -1,9 +1,9 @@
-package com.oauth.authorization.domain.code.service;
+package com.oauth.authorization.domain.authorization.service;
 
-import com.oauth.authorization.domain.code.exception.OAuthAuthorizationCodeErrorCode;
-import com.oauth.authorization.domain.code.model.CustomOAuth2Authorization;
-import com.oauth.authorization.domain.code.repository.CustomOAuth2AuthorizationQueryRepository;
-import com.oauth.authorization.domain.code.repository.CustomOAuth2AuthorizationRepository;
+import com.oauth.authorization.domain.authorization.exception.OAuth2AuthorizationErrorCode;
+import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
+import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationQueryRepository;
+import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationRepository;
 import com.oauth.authorization.domain.user.model.UserInfoAdapter;
 import com.oauth.authorization.domain.user.service.UserInfoService;
 import com.oauth.authorization.global.exception.BusinessException;
@@ -45,14 +45,14 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     @Override
     public OAuth2Authorization findById(String id) {
         CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByAuthorizationId(id)
-                .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
+                .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
         return oAuth2Authorization.getOAuth2Authorization();
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByToken(token, tokenType.getValue())
-                .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
+                .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
         return oAuth2Authorization.getOAuth2Authorization();
     }
 

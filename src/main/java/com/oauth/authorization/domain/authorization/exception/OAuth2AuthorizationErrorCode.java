@@ -1,4 +1,4 @@
-package com.oauth.authorization.domain.code.exception;
+package com.oauth.authorization.domain.authorization.exception;
 
 import com.oauth.authorization.global.exception.ErrorCode;
 import lombok.AccessLevel;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public enum OAuthAuthorizationCodeErrorCode implements ErrorCode {
+public enum OAuth2AuthorizationErrorCode implements ErrorCode {
 
     NOT_FOUND(4001, 404, "존재하지 않는 OAuth2Authorization입니다.");
 

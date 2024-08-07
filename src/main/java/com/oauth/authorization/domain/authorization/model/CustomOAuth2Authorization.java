@@ -1,4 +1,4 @@
-package com.oauth.authorization.domain.code.model;
+package com.oauth.authorization.domain.authorization.model;
 
 import com.oauth.authorization.global.util.References;
 import com.oauth.authorization.global.util.SerializableObjectConverter;
