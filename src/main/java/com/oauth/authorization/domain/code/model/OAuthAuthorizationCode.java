@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @NoArgsConstructor
-@Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CODE)
+@Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CODE + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 public class OAuthAuthorizationCode implements Serializable {
 

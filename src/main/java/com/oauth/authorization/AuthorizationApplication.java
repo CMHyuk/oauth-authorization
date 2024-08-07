@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-@EnableFeignClients
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
 @EnableElasticsearchRepositories(repositoryBaseClass = CustomAwareRepositoryImpl.class, repositoryFactoryBeanClass = CustomAwareRepositoryFactoryBean.class)
 public class AuthorizationApplication {
