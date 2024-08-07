@@ -1,7 +1,6 @@
 package com.oauth.authorization.domain.code.service;
 
 import com.oauth.authorization.domain.client.exception.ClientErrorCode;
-import com.oauth.authorization.domain.client.mapper.RegisteredClientMapper;
 import com.oauth.authorization.domain.client.model.ClientInfo;
 import com.oauth.authorization.domain.client.repository.ClientInfoQueryRepository;
 import com.oauth.authorization.domain.code.exception.OAuthAuthorizationCodeErrorCode;
@@ -17,10 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.OAuth2Token;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
@@ -30,7 +25,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -64,14 +58,14 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
     public OAuth2Authorization findById(String id) {
         OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findById(id)
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
-        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
+        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthorization());
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         OAuthAuthorizationCode oAuthAuthorizationCode = oAuthAuthorizationCodeQueryRepository.findByToken(token, tokenType.getValue())
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
-        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
+        return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthorization());
     }
 
     private boolean isComplete(OAuth2Authorization authorization) {
@@ -89,7 +83,6 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
                 .build();
 
         OAuthAuthorizationCode oAuthAuthorizationCode = OAuthAuthorizationCode.create(
-                updatedAuthorization.getToken(OAuth2AuthorizationCode.class).getToken().getTokenValue(),
                 code,
                 state,
                 SerializableObjectConverter.serialize(updatedAuthorization)
@@ -103,7 +96,7 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
         String code = getCode(authorization);
         oAuthAuthorizationCodeQueryRepository.findByCode(code)
                 .ifPresent(oAuthAuthorizationCode -> {
-                    oAuthAuthorizationCode.update(SerializableObjectConverter.serialize(authorization));
+                    oAuthAuthorizationCode.updateAuthorization(SerializableObjectConverter.serialize(authorization));
                     oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
                 });
     }
