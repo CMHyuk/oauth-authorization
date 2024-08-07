@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CODE + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
-public class OAuth2Authorization implements Serializable {
+public class CustomOAuth2Authorization implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,11 +27,11 @@ public class OAuth2Authorization implements Serializable {
     private String authorizationId;
     private String authorization;
 
-    public static OAuth2Authorization create(String code, String state, String authorizationId, String authentication) {
-        return new OAuth2Authorization(code, state, authorizationId, authentication);
+    public static CustomOAuth2Authorization create(String code, String state, String authorizationId, String authentication) {
+        return new CustomOAuth2Authorization(code, state, authorizationId, authentication);
     }
 
-    public OAuth2Authorization(String code, String state, String authorizationId, String authorization) {
+    public CustomOAuth2Authorization(String code, String state, String authorizationId, String authorization) {
         this.code = code;
         this.state = state;
         this.authorizationId = authorizationId;

@@ -1,6 +1,6 @@
 package com.oauth.authorization.domain.code.repository;
 
-import com.oauth.authorization.domain.code.model.OAuth2Authorization;
+import com.oauth.authorization.domain.code.model.CustomOAuth2Authorization;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -10,23 +10,23 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class OAuthAuthorizationQueryRepository {
+public class CustomOAuth2AuthorizationQueryRepository {
 
     private static final String STATE_KEYWORD = "state.keyword";
     private static final String CODE_KEYWORD = "code.keyword";
     private static final String ACCESS_TOKEN_KEYWORD = "tokenValue.keyword";
     private static final String AUTHORIZATION_KEYWORD = "authorizationId.keyword";
 
-    private final OAuthAuthorizationRepository oauthAuthorizationRepository;
+    private final CustomOAuth2AuthorizationRepository oauthAuthorizationRepository;
 
-    public Optional<OAuth2Authorization> findByAuthorizationId(String authorizationId) {
+    public Optional<CustomOAuth2Authorization> findByAuthorizationId(String authorizationId) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
                 .filter(QueryBuilders.termQuery(AUTHORIZATION_KEYWORD, authorizationId));
-        OAuth2Authorization oAuth2Authorization = oauthAuthorizationRepository.find(null, query);
-        return Optional.ofNullable(oAuth2Authorization);
+        CustomOAuth2Authorization customOAuth2Authorization = oauthAuthorizationRepository.find(null, query);
+        return Optional.ofNullable(customOAuth2Authorization);
     }
 
-    public Optional<OAuth2Authorization> findByToken(String token, String tokenType) {
+    public Optional<CustomOAuth2Authorization> findByToken(String token, String tokenType) {
         BoolQueryBuilder query = null;
         if (tokenType.equals("state")) {
             query = QueryBuilders.boolQuery()
@@ -40,7 +40,7 @@ public class OAuthAuthorizationQueryRepository {
             query = QueryBuilders.boolQuery()
                     .filter(QueryBuilders.termQuery(ACCESS_TOKEN_KEYWORD, token));
         }
-        OAuth2Authorization oAuth2Authorization = oauthAuthorizationRepository.find(null, query);
-        return Optional.ofNullable(oAuth2Authorization);
+        CustomOAuth2Authorization customOAuth2Authorization = oauthAuthorizationRepository.find(null, query);
+        return Optional.ofNullable(customOAuth2Authorization);
     }
 }
