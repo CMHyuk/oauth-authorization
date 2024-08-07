@@ -7,7 +7,6 @@ import com.oauth.authorization.domain.code.repository.CustomOAuth2AuthorizationR
 import com.oauth.authorization.domain.user.model.UserInfoAdapter;
 import com.oauth.authorization.domain.user.service.UserInfoService;
 import com.oauth.authorization.global.exception.BusinessException;
-import com.oauth.authorization.global.util.SerializableObjectConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
@@ -47,14 +46,14 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     public OAuth2Authorization findById(String id) {
         CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByAuthorizationId(id)
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
-        return SerializableObjectConverter.deserialize(oAuth2Authorization.getAuthorization());
+        return oAuth2Authorization.getOAuth2Authorization();
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
         CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByToken(token, tokenType.getValue())
                 .orElseThrow(() -> BusinessException.from(OAuthAuthorizationCodeErrorCode.NOT_FOUND));
-        return SerializableObjectConverter.deserialize(oAuth2Authorization.getAuthorization());
+        return oAuth2Authorization.getOAuth2Authorization();
     }
 
     private boolean isComplete(OAuth2Authorization authorization) {
@@ -75,7 +74,8 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
                 INITIAL_CODE,
                 authorization.getAttribute("state"),
                 authorizationId,
-                SerializableObjectConverter.serialize(authorization));
+                authorization
+        );
         oAuthAuthorizationRepository.save(tenantId, newCustomOAuth2Authorization);
     }
 
@@ -87,7 +87,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private void updateOAuth2Authorization(OAuth2Authorization authorization, String tenantId, CustomOAuth2Authorization oAuth2Authorization) {
         String code = getCode(authorization);
-        oAuth2Authorization.updateAuthorization(code, SerializableObjectConverter.serialize(authorization));
+        oAuth2Authorization.updateAuthorization(code, authorization);
         oAuthAuthorizationRepository.save(tenantId, oAuth2Authorization);
     }
 
