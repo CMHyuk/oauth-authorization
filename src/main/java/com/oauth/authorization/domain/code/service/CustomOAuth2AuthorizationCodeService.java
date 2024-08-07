@@ -17,7 +17,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -41,11 +44,11 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
 
     @Override
     public void save(OAuth2Authorization authorization) {
+        String tenantId = getTenantId(authorization);
+
         if (!isComplete(authorization)) {
             String code = generateAuthorizationCode();
-            String tenantId = getTenantId(authorization);
             ClientInfo clientInfo = getClientInfo(authorization.getRegisteredClientId());
-
             String redirectUri = clientInfo.getRegisteredRedirectUris().iterator().next();
             String state = authorization.getAttribute("state");
 
@@ -62,6 +65,14 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
                     )
             );
             redirectToClient(redirectUri, code, state);
+        } else {
+            OAuth2Authorization.Token<OAuth2AuthorizationCode> authorizationCode = authorization.getToken(OAuth2AuthorizationCode.class);
+            String code = authorizationCode.getToken().getTokenValue();
+            oAuthAuthorizationCodeQueryRepository.findByCode(code)
+                    .ifPresent(oAuthAuthorizationCode -> {
+                        oAuthAuthorizationCode.update(SerializableObjectConverter.serialize(authorization));
+                        oAuthAuthorizationCodeRepository.save(tenantId, oAuthAuthorizationCode);
+                    });
         }
     }
 
@@ -88,7 +99,7 @@ public class CustomOAuth2AuthorizationCodeService implements OAuth2Authorization
         return SerializableObjectConverter.deserialize(oAuthAuthorizationCode.getAuthentication());
     }
 
-    private static boolean isComplete(OAuth2Authorization authorization) {
+    private boolean isComplete(OAuth2Authorization authorization) {
         return authorization.getAccessToken() != null;
     }
 

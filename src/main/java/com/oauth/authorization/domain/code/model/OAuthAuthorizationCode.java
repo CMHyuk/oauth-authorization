@@ -37,4 +37,8 @@ public class OAuthAuthorizationCode implements Serializable {
         this.state = state;
         this.authentication = authentication;
     }
+
+    public void update(String authentication) {
+        this.authentication = authentication;
+    }
 }

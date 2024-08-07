@@ -43,4 +43,11 @@ public class OAuthAuthorizationCodeQueryRepository {
         OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
         return Optional.ofNullable(oAuthAuthorizationCode);
     }
+
+    public Optional<OAuthAuthorizationCode> findByCode(String code) {
+        BoolQueryBuilder query = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.termQuery(CODE_KEYWORD, code));
+        OAuthAuthorizationCode oAuthAuthorizationCode = oauthAuthorizationCodeRepository.find(null, query);
+        return Optional.ofNullable(oAuthAuthorizationCode);
+    }
 }
