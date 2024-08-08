@@ -4,6 +4,7 @@ import com.oauth.authorization.domain.authorization.exception.OAuth2Authorizatio
 import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
 import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationQueryRepository;
 import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationRepository;
+import com.oauth.authorization.domain.token.service.ElasticSearchTokenService;
 import com.oauth.authorization.domain.user.model.UserInfoAdapter;
 import com.oauth.authorization.domain.user.service.UserInfoService;
 import com.oauth.authorization.global.exception.BusinessException;
@@ -22,6 +23,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private final CustomOAuth2AuthorizationQueryRepository oAuth2AuthorizationQueryRepository;
     private final CustomOAuth2AuthorizationRepository oAuthAuthorizationRepository;
+    private final ElasticSearchTokenService elasticSearchTokenService;
     private final UserInfoService userInfoService;
 
     @Override
@@ -30,6 +32,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
         if (!isComplete(authorization)) {
             handleIncompleteAuthorization(authorization, tenantId);
         } else {
+            // 여기서 accessToken 저장
             handleCompleteAuthorization(authorization, tenantId);
         }
     }
@@ -83,6 +86,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
         String authorizationId = authorization.getId();
         oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
                 .ifPresent(oAuth2Authorization -> updateOAuth2Authorization(authorization, tenantId, oAuth2Authorization));
+        elasticSearchTokenService.save(authorization, tenantId);
     }
 
     private void updateOAuth2Authorization(OAuth2Authorization authorization, String tenantId, CustomOAuth2Authorization oAuth2Authorization) {
