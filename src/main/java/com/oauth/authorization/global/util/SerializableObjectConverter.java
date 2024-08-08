@@ -12,39 +12,21 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 @SuppressWarnings("deprecation")
 public class SerializableObjectConverter {
 
-	public static String serialize(OAuth2Authorization object) {
+    public static String serialize(OAuth2Authorization object) {
         try {
             byte[] bytes = SerializationUtils.serialize(object);
             return Base64.encodeBase64String(bytes);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
         }
     }
 
-    public static OAuth2Authorization  deserialize(String encodedObject) {
+    public static OAuth2Authorization deserialize(String encodedObject) {
         try {
             byte[] bytes = Base64.decodeBase64(encodedObject);
             return SerializationUtils.deserialize(bytes);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
         }
     }
-
-    public static String serializeAuthentication(OAuth2Authorization  object) {
-		try {
-			byte[] bytes = SerializationUtils.serialize(object);
-			return Base64.encodeBase64String(bytes);
-		} catch (Exception e) {
-            throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
-		}
-	}
-
-	public static OAuth2Authorization  deserializeAuthentication(String encodedObject) {
-		try {
-			byte[] bytes = Base64.decodeBase64(encodedObject);
-			return SerializationUtils.deserialize(bytes);
-		} catch (Exception e) {
-            throw BusinessException.from(new InternalServerErrorCode(e.getMessage()));
-		}
-	}
 }

@@ -83,9 +83,10 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private void handleCompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
         String authorizationId = authorization.getId();
-        oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
-                .ifPresent(oAuth2Authorization -> updateOAuth2Authorization(authorization, tenantId, oAuth2Authorization));
-        elasticSearchTokenService.save(authorization, tenantId);
+        CustomOAuth2Authorization customOAuth2Authorization = oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
+                .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
+        elasticSearchTokenService.save(customOAuth2Authorization, authorization, tenantId);
+        updateOAuth2Authorization(authorization, tenantId, customOAuth2Authorization);
     }
 
     private void updateOAuth2Authorization(OAuth2Authorization authorization, String tenantId, CustomOAuth2Authorization oAuth2Authorization) {
