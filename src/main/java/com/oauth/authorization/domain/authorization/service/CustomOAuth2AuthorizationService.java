@@ -19,8 +19,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationService {
 
-    private static final String INITIAL_CODE = "EMPTY_CODE";
-
     private final CustomOAuth2AuthorizationQueryRepository oAuth2AuthorizationQueryRepository;
     private final CustomOAuth2AuthorizationRepository oAuthAuthorizationRepository;
     private final ElasticSearchTokenService elasticSearchTokenService;
