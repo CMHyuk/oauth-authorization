@@ -32,7 +32,6 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
         if (!isComplete(authorization)) {
             handleIncompleteAuthorization(authorization, tenantId);
         } else {
-            // 여기서 accessToken 저장
             handleCompleteAuthorization(authorization, tenantId);
         }
     }
