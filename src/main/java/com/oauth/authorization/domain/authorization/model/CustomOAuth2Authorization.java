@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationCode;
 
 import java.io.Serializable;
 
@@ -18,6 +19,8 @@ import java.io.Serializable;
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CODE + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 public class CustomOAuth2Authorization implements Serializable {
+
+    private static final String INITIAL_CODE = "EMPTY_CODE";
 
     private static final long serialVersionUID = 1L;
 
@@ -29,8 +32,12 @@ public class CustomOAuth2Authorization implements Serializable {
     private String authorizationId;
     private String oAuth2Authorization;
 
-    public static CustomOAuth2Authorization create(String code, String state, String authorizationId, OAuth2Authorization authentication) {
-        return new CustomOAuth2Authorization(code, state, authorizationId, authentication);
+    public static CustomOAuth2Authorization create(OAuth2Authorization.Token<OAuth2AuthorizationCode> token, String state, String authorizationId, OAuth2Authorization authentication) {
+        return new CustomOAuth2Authorization(
+                token == null ? INITIAL_CODE : token.getToken().getTokenValue(),
+                state,
+                authorizationId,
+                authentication);
     }
 
     public CustomOAuth2Authorization(String code, String state, String authorizationId, OAuth2Authorization oAuth2Authorization) {
