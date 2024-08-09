@@ -1,6 +1,7 @@
 package com.oauth.authorization.domain.authorization.service;
 
 import com.oauth.authorization.domain.authorization.exception.OAuth2AuthorizationErrorCode;
+import com.oauth.authorization.domain.authorization.mapper.CustomOAuth2AuthorizationMapper;
 import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
 import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationQueryRepository;
 import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationRepository;
@@ -21,6 +22,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private final CustomOAuth2AuthorizationQueryRepository oAuth2AuthorizationQueryRepository;
     private final CustomOAuth2AuthorizationRepository oAuthAuthorizationRepository;
+    private final CustomOAuth2AuthorizationMapper customOAuth2AuthorizationMapper;
     private final ElasticSearchTokenService elasticSearchTokenService;
     private final UserInfoService userInfoService;
 
@@ -71,7 +73,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private void saveNewOAuth2Authorization(OAuth2Authorization authorization, String tenantId, String authorizationId) {
         OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization.getToken(OAuth2AuthorizationCode.class);
-        CustomOAuth2Authorization newCustomOAuth2Authorization = CustomOAuth2Authorization.create(
+        CustomOAuth2Authorization newCustomOAuth2Authorization = customOAuth2AuthorizationMapper.create(
                 token,
                 authorization.getAttribute("state"),
                 authorizationId,
