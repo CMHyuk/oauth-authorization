@@ -9,7 +9,6 @@ import com.oauth.authorization.domain.tenant.model.TenantInfo;
 import com.oauth.authorization.domain.tenant.repository.TenantInfoQueryRepository;
 import com.oauth.authorization.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -70,18 +69,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private RSAPublicKey loadPublicKey(byte[] publicKeyBytes) throws Exception {
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
-        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-    }
-
-    private RSAPrivateKey loadPrivateKey(byte[] privateKeyBytes) throws Exception {
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
-    }
-
     @Bean
     public JWKSource<SecurityContext> jwkSource() throws Exception {
         TenantInfo tenantInfo = tenantInfoQueryRepository.findByTenantName("master")
@@ -94,11 +81,22 @@ public class SecurityConfig {
 
         RSAKey rsaKey = new RSAKey.Builder(rsaPublicKey)
                 .privateKey(rsaPrivateKey)
-                .keyID(UUID.randomUUID().toString()) // 키 ID를 생성
+                .keyID(UUID.randomUUID().toString())
                 .build();
 
         JWKSet jwkSet = new JWKSet(rsaKey);
         return (jwkSelector, context) -> jwkSelector.select(jwkSet);
     }
 
+    private RSAPublicKey loadPublicKey(byte[] publicKeyBytes) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
+        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+    }
+
+    private RSAPrivateKey loadPrivateKey(byte[] privateKeyBytes) throws Exception {
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
+        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+    }
 }
