@@ -1,13 +1,11 @@
 package com.oauth.authorization.config;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.oauth.authorization.domain.tenant.exception.TenantErrorCode;
-import com.oauth.authorization.domain.tenant.model.TenantInfo;
+import com.oauth.authorization.domain.auth.CustomJwtEncoder;
+import com.oauth.authorization.domain.client.repository.ClientInfoQueryRepository;
 import com.oauth.authorization.domain.tenant.repository.TenantInfoQueryRepository;
-import com.oauth.authorization.global.exception.BusinessException;
+import com.oauth.authorization.domain.user.repository.UserInfoQueryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,23 +16,18 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final ClientInfoQueryRepository clientInfoQueryRepository;
     private final TenantInfoQueryRepository tenantInfoQueryRepository;
 
     @Bean
@@ -70,33 +63,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JWKSource<SecurityContext> jwkSource() throws Exception {
-        TenantInfo tenantInfo = tenantInfoQueryRepository.findByTenantName("master")
-                .orElseThrow(() -> BusinessException.from(TenantErrorCode.NOT_FOUND));
-        byte[] publicKeyBytes = tenantInfo.getTenantRSAPublicKey();
-        byte[] privateKeyBytes = tenantInfo.getTenantRSAPrivateKey();
-
-        RSAPublicKey rsaPublicKey = loadPublicKey(publicKeyBytes);
-        RSAPrivateKey rsaPrivateKey = loadPrivateKey(privateKeyBytes);
-
-        RSAKey rsaKey = new RSAKey.Builder(rsaPublicKey)
-                .privateKey(rsaPrivateKey)
-                .keyID(UUID.randomUUID().toString())
-                .build();
-
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return (jwkSelector, context) -> jwkSelector.select(jwkSet);
-    }
-
-    private RSAPublicKey loadPublicKey(byte[] publicKeyBytes) throws Exception {
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(publicKeyBytes);
-        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
-    }
-
-    private RSAPrivateKey loadPrivateKey(byte[] privateKeyBytes) throws Exception {
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
-        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+    public JwtEncoder jwtEncoder() {
+        return new CustomJwtEncoder(clientInfoQueryRepository, tenantInfoQueryRepository);
     }
 }

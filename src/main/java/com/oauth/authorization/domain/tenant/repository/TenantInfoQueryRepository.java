@@ -12,13 +12,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TenantInfoQueryRepository {
 
-    private static final String TENANT_NAME_KEYWORD = "tenantName.keyword";
+    private static final String ID_KEYWORD = "_id";
 
     private final TenantInfoRepository tenantInfoRepository;
 
-    public Optional<TenantInfo> findByTenantName(String tenantName) {
+    public Optional<TenantInfo> findByTenantId(String tenantName) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.termQuery(TENANT_NAME_KEYWORD, tenantName));
+                .filter(QueryBuilders.termQuery(ID_KEYWORD, tenantName));
         TenantInfo tenantInfo = tenantInfoRepository.find(null, query);
         return Optional.ofNullable(tenantInfo);
     }
