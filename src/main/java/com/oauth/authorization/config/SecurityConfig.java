@@ -1,11 +1,7 @@
 package com.oauth.authorization.config;
 
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import com.oauth.authorization.domain.auth.CustomJwtEncoder;
-import com.oauth.authorization.domain.client.repository.ClientInfoQueryRepository;
-import com.oauth.authorization.domain.tenant.repository.TenantInfoQueryRepository;
-import com.oauth.authorization.domain.user.repository.UserInfoQueryRepository;
+import com.oauth.authorization.domain.tenant.service.TenantInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +23,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ClientInfoQueryRepository clientInfoQueryRepository;
-    private final TenantInfoQueryRepository tenantInfoQueryRepository;
+    private final TenantInfoService tenantInfoService;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -64,6 +59,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder() {
-        return new CustomJwtEncoder(clientInfoQueryRepository, tenantInfoQueryRepository);
+        return new CustomJwtEncoder(tenantInfoService);
     }
 }

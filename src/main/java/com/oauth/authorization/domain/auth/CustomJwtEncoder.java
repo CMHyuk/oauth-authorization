@@ -10,12 +10,8 @@ import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.oauth.authorization.domain.client.model.ClientInfo;
-import com.oauth.authorization.domain.client.repository.ClientInfoQueryRepository;
-import com.oauth.authorization.domain.tenant.exception.TenantErrorCode;
-import com.oauth.authorization.domain.tenant.model.TenantInfo;
-import com.oauth.authorization.domain.tenant.repository.TenantInfoQueryRepository;
-import com.oauth.authorization.domain.user.exception.UserErrorCode;
+import com.oauth.authorization.domain.tenant.dto.KeyResponse;
+import com.oauth.authorization.domain.tenant.service.TenantInfoService;
 import com.oauth.authorization.global.exception.BusinessException;
 import com.oauth.authorization.global.exception.InternalServerErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class CustomJwtEncoder implements JwtEncoder {
 
-    private final ClientInfoQueryRepository clientInfoQueryRepository;
-    private final TenantInfoQueryRepository tenantInfoQueryRepository;
+    private final TenantInfoService tenantInfoService;
     private static final JWSSignerFactory JWS_SIGNER_FACTORY = new DefaultJWSSignerFactory();
     private final Map<JWK, JWSSigner> jwsSigners = new ConcurrentHashMap();
 
@@ -61,14 +56,10 @@ public class CustomJwtEncoder implements JwtEncoder {
     private RSAKey getRsaKey() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String clientId = authentication.getName();
+        KeyResponse key = tenantInfoService.getKey(clientId);
 
-        ClientInfo clientInfo = clientInfoQueryRepository.findByClientId(clientId)
-                .orElseThrow(() -> BusinessException.from(UserErrorCode.NOT_FOUND));
-        TenantInfo tenantInfo = tenantInfoQueryRepository.findByTenantId(clientInfo.getTenantId())
-                .orElseThrow(() -> BusinessException.from(TenantErrorCode.NOT_FOUND));
-
-        byte[] publicKeyBytes = tenantInfo.getTenantRSAPublicKey();
-        byte[] privateKeyBytes = tenantInfo.getTenantRSAPrivateKey();
+        byte[] publicKeyBytes = key.pubKey();
+        byte[] privateKeyBytes = key.priKey();
 
         RSAPublicKey rsaPublicKey = loadPublicKey(publicKeyBytes);
         RSAPrivateKey rsaPrivateKey = loadPrivateKey(privateKeyBytes);
