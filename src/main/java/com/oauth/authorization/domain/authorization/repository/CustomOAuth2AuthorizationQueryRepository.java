@@ -1,6 +1,11 @@
 package com.oauth.authorization.domain.authorization.repository;
 
+import com.oauth.authorization.domain.authorization.exception.OAuth2AuthorizationErrorCode;
 import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
+import com.oauth.authorization.domain.token.exception.TokenErrorCode;
+import com.oauth.authorization.domain.token.model.ElasticSearchToken;
+import com.oauth.authorization.domain.token.repository.ElasticSearchTokenQueryRepository;
+import com.oauth.authorization.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -18,6 +23,7 @@ public class CustomOAuth2AuthorizationQueryRepository {
     private static final String AUTHORIZATION_KEYWORD = "authorizationId.keyword";
 
     private final CustomOAuth2AuthorizationRepository oauthAuthorizationRepository;
+    private final ElasticSearchTokenQueryRepository elasticSearchTokenQueryRepository;
 
     public Optional<CustomOAuth2Authorization> findByAuthorizationId(String authorizationId) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
@@ -40,7 +46,19 @@ public class CustomOAuth2AuthorizationQueryRepository {
             query = QueryBuilders.boolQuery()
                     .filter(QueryBuilders.termQuery(ACCESS_TOKEN_KEYWORD, token));
         }
+        if (tokenType.equals("refresh_token")) {
+            CustomOAuth2Authorization customOAuth2Authorization = findByRefreshToken(token);
+            return Optional.ofNullable(customOAuth2Authorization);
+        }
         CustomOAuth2Authorization customOAuth2Authorization = oauthAuthorizationRepository.find(null, query);
         return Optional.ofNullable(customOAuth2Authorization);
+    }
+
+    private CustomOAuth2Authorization findByRefreshToken(String token) {
+        ElasticSearchToken elasticSearchToken = elasticSearchTokenQueryRepository.findByRefreshToken(token)
+                .orElseThrow(() -> BusinessException.from(TokenErrorCode.NOT_FOUND));
+        String clientId = elasticSearchToken.getAuthorizationId();
+        return findByAuthorizationId(clientId)
+                .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
     }
 }

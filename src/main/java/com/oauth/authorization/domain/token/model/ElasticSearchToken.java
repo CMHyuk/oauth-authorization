@@ -26,7 +26,7 @@ public class ElasticSearchToken implements Serializable {
     @Id
     private String id;
 
-    private String clientId;
+    private String authorizationId;
     private String username;
     private String accessToken;
     private String refreshToken;
@@ -34,15 +34,15 @@ public class ElasticSearchToken implements Serializable {
 
     public static ElasticSearchToken from(OAuth2Authorization authorization) {
         return new ElasticSearchToken(
-                authorization.getRegisteredClientId(),
+                authorization.getId(),
                 authorization.getPrincipalName(),
                 authorization.getAccessToken().getToken().getTokenValue(),
                 authorization.getRefreshToken().getToken().getTokenValue()
         );
     }
 
-    public ElasticSearchToken(String clientId, String username, String accessToken, String refreshToken) {
-        this.clientId = clientId;
+    public ElasticSearchToken(String authorizationId, String username, String accessToken, String refreshToken) {
+        this.authorizationId = authorizationId;
         this.username = username;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
