@@ -19,5 +19,8 @@ public class ElasticSearchTokenService {
         if (authorizationCode.isActive()) {
             elasticSearchTokenRepository.save(tenantId, ElasticSearchToken.from(authorization));
         }
+        if (authorizationCode.isInvalidated()) {
+            elasticSearchTokenRepository.save(tenantId, ElasticSearchToken.from(authorization));
+        }
     }
 }
