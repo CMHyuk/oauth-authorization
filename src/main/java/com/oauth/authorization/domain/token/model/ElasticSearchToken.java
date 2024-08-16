@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Mapping;
 import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CLIENT_DETAILS + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
+@Mapping(mappingPath = "access_token_mapping.json")
 public class ElasticSearchToken implements Serializable {
 
     private static final long serialVersionUID = 1L;
