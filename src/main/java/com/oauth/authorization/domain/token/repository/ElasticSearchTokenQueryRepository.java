@@ -18,7 +18,7 @@ public class ElasticSearchTokenQueryRepository {
 
     public Optional<ElasticSearchToken> findByRefreshToken(String refreshToken) {
         BoolQueryBuilder query = QueryBuilders.boolQuery()
-                .filter(QueryBuilders.matchQuery(REFRESH_TOKEN_KEYWORD, refreshToken));
+                .filter(QueryBuilders.termQuery(REFRESH_TOKEN_KEYWORD, refreshToken));
         ElasticSearchToken elasticSearchToken = elasticSearchTokenRepository.find(null, query);
         return Optional.ofNullable(elasticSearchToken);
     }
