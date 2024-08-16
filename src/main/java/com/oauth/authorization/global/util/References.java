@@ -11,4 +11,5 @@ public class References {
 	public static final String ELASTIC_INDEX_PREFIX_OAUTH_USER = "oauth_user_";
 	public static final String ELASTIC_INDEX_PREFIX_OAUTH_CLIENT_DETAILS = "oauth_client_details_";
 	public static final String ELASTIC_INDEX_PREFIX_OAUTH_CODE = "oauth_authorization_code_";
+	public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 }
