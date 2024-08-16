@@ -10,11 +10,11 @@ public class CustomOAuth2AuthorizationMapper {
 
     private static final String INITIAL_CODE = "EMPTY_CODE";
 
-    public CustomOAuth2Authorization create(OAuth2Authorization.Token<OAuth2AuthorizationCode> token, String state, String authorizationId, OAuth2Authorization authentication) {
+    public CustomOAuth2Authorization create(OAuth2Authorization.Token<OAuth2AuthorizationCode> token, String state, String authorizationId, OAuth2Authorization authorization) {
         return new CustomOAuth2Authorization(
                 token == null ? INITIAL_CODE : token.getToken().getTokenValue(),
                 state,
                 authorizationId,
-                authentication);
+                authorization);
     }
 }
