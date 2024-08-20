@@ -19,3 +19,5 @@ elasticsearch:
 server:
   port: 9000
   forward-headers-strategy: framework
+  servlet:
+    context-path: /authorization
