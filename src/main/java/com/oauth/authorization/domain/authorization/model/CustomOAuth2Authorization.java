@@ -1,28 +1,21 @@
 package com.oauth.authorization.domain.authorization.model;
 
+import com.oauth.authorization.global.domain.BaseEntity;
 import com.oauth.authorization.global.util.References;
 import com.oauth.authorization.global.util.SerializableObjectConverter;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 
-import java.io.Serializable;
-
 @Entity
 @Getter
 @NoArgsConstructor
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CODE + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
-public class CustomOAuth2Authorization implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    private String id;
+public class CustomOAuth2Authorization extends BaseEntity {
 
     private String code;
     private String state;

@@ -1,10 +1,10 @@
 package com.oauth.authorization.domain.token.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.oauth.authorization.global.domain.BaseEntity;
 import com.oauth.authorization.global.util.References;
 import com.oauth.authorization.global.util.SourceIpUtil;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -12,7 +12,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -22,12 +21,7 @@ import java.time.ZoneId;
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_CLIENT_DETAILS + "*", createIndex = false)
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 @Mapping(mappingPath = "access_token_mapping.json")
-public class ElasticSearchToken implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    private String id;
+public class ElasticSearchToken extends BaseEntity {
 
     private String authorizationId;
 

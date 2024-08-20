@@ -1,15 +1,14 @@
 package com.oauth.authorization.domain.user.model;
 
+import com.oauth.authorization.global.domain.BaseEntity;
 import com.oauth.authorization.global.util.References;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import java.io.Serializable;
 import java.util.Set;
 
 @Getter
@@ -17,12 +16,7 @@ import java.util.Set;
 @Entity
 @Document(indexName = References.ELASTIC_INDEX_PREFIX_OAUTH_USER + "*", createIndex = false)
 @SuppressWarnings("JpaAttributeTypeInspection")
-public class UserInfo implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    private String id;
+public class UserInfo extends BaseEntity {
 
     private String tenantId;
     private String username;
