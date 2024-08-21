@@ -7,7 +7,7 @@ public class TimeLogPointCut {
     @Pointcut("domainPackagePointCut() && ( componentPointCut() || servicePointCut() || repositoryPointCut() )")
     public void timeLogPointCut() {}
 
-    @Pointcut("execution(* com.oauth.resource.domain..*.*(..))")
+    @Pointcut("execution(* com.oauth.authorization.domain..*.*(..))")
     private void domainPackagePointCut() {}
 
     @Pointcut("@target(org.springframework.stereotype.Service)")
