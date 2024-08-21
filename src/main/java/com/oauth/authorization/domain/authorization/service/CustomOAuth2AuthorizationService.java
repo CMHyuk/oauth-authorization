@@ -3,7 +3,6 @@ package com.oauth.authorization.domain.authorization.service;
 import com.oauth.authorization.domain.authorization.exception.OAuth2AuthorizationErrorCode;
 import com.oauth.authorization.domain.authorization.mapper.CustomOAuth2AuthorizationMapper;
 import com.oauth.authorization.domain.authorization.model.CustomOAuth2Authorization;
-import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationQueryRepository;
 import com.oauth.authorization.domain.authorization.repository.CustomOAuth2AuthorizationRepository;
 import com.oauth.authorization.domain.token.service.ElasticSearchTokenService;
 import com.oauth.authorization.domain.user.model.UserInfoAdapter;
@@ -20,8 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationService {
 
-    private final CustomOAuth2AuthorizationQueryRepository oAuth2AuthorizationQueryRepository;
-    private final CustomOAuth2AuthorizationRepository oAuthAuthorizationRepository;
+    private final CustomOAuth2AuthorizationRepository customOAuth2AuthorizationRepository;
     private final CustomOAuth2AuthorizationMapper customOAuth2AuthorizationMapper;
     private final ElasticSearchTokenService elasticSearchTokenService;
     private final UserInfoService userInfoService;
@@ -40,20 +38,20 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     public void remove(OAuth2Authorization authorization) {
         String authorizationId = authorization.getId();
         String tenantId = getTenantId(authorization);
-        oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
-                .ifPresent(oAuth2Authorization -> oAuthAuthorizationRepository.delete(tenantId, oAuth2Authorization));
+        customOAuth2AuthorizationRepository.findByAuthorizationId(authorizationId)
+                .ifPresent(oAuth2Authorization -> customOAuth2AuthorizationRepository.delete(tenantId, oAuth2Authorization));
     }
 
     @Override
     public OAuth2Authorization findById(String id) {
-        CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByAuthorizationId(id)
+        CustomOAuth2Authorization oAuth2Authorization = customOAuth2AuthorizationRepository.findByAuthorizationId(id)
                 .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
         return oAuth2Authorization.getOAuth2Authorization();
     }
 
     @Override
     public OAuth2Authorization findByToken(String token, OAuth2TokenType tokenType) {
-        CustomOAuth2Authorization oAuth2Authorization = oAuth2AuthorizationQueryRepository.findByToken(token, tokenType.getValue())
+        CustomOAuth2Authorization oAuth2Authorization = customOAuth2AuthorizationRepository.findByToken(token, tokenType.getValue())
                 .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
         return oAuth2Authorization.getOAuth2Authorization();
     }
@@ -64,7 +62,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
 
     private void handleIncompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
         String authorizationId = authorization.getId();
-        oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
+        customOAuth2AuthorizationRepository.findByAuthorizationId(authorizationId)
                 .ifPresentOrElse(
                         oAuth2Authorization -> updateOAuth2Authorization(authorization, tenantId, oAuth2Authorization),
                         () -> saveNewOAuth2Authorization(authorization, tenantId, authorizationId)
@@ -79,12 +77,12 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
                 authorizationId,
                 authorization
         );
-        oAuthAuthorizationRepository.save(tenantId, newCustomOAuth2Authorization);
+        customOAuth2AuthorizationRepository.save(tenantId, newCustomOAuth2Authorization);
     }
 
     private void handleCompleteAuthorization(OAuth2Authorization authorization, String tenantId) {
         String authorizationId = authorization.getId();
-        CustomOAuth2Authorization customOAuth2Authorization = oAuth2AuthorizationQueryRepository.findByAuthorizationId(authorizationId)
+        CustomOAuth2Authorization customOAuth2Authorization = customOAuth2AuthorizationRepository.findByAuthorizationId(authorizationId)
                 .orElseThrow(() -> BusinessException.from(OAuth2AuthorizationErrorCode.NOT_FOUND));
         elasticSearchTokenService.save(customOAuth2Authorization, authorization, tenantId);
         updateOAuth2Authorization(authorization, tenantId, customOAuth2Authorization);
@@ -93,7 +91,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     private void updateOAuth2Authorization(OAuth2Authorization authorization, String tenantId, CustomOAuth2Authorization oAuth2Authorization) {
         String code = getCode(authorization);
         oAuth2Authorization.updateAuthorization(code, authorization);
-        oAuthAuthorizationRepository.save(tenantId, oAuth2Authorization);
+        customOAuth2AuthorizationRepository.save(tenantId, oAuth2Authorization);
     }
 
     private String getCode(OAuth2Authorization authorization) {

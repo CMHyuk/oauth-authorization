@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class CustomRegisteredClientRepository implements RegisteredClientRepository {
 
-    private final ClientInfoQueryRepository clientInfoQueryRepository;
+    private final ClientInfoRepository clientInfoRepository;
     private final RegisteredClientMapper registeredClientMapper;
 
     @Override
@@ -24,14 +24,14 @@ public class CustomRegisteredClientRepository implements RegisteredClientReposit
 
     @Override
     public RegisteredClient findById(String id) {
-        ClientInfo clientInfo = clientInfoQueryRepository.findById(id)
+        ClientInfo clientInfo = clientInfoRepository.findById(id)
                 .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
         return registeredClientMapper.toRegisteredClient(clientInfo);
     }
 
     @Override
     public RegisteredClient findByClientId(String clientId) {
-        ClientInfo clientInfo = clientInfoQueryRepository.findByClientId(clientId)
+        ClientInfo clientInfo = clientInfoRepository.findByClientId(clientId)
                 .orElseThrow(() -> BusinessException.from(ClientErrorCode.NOT_FOUND));
         return registeredClientMapper.toRegisteredClient(clientInfo);
     }
