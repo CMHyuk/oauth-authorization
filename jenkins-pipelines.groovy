@@ -24,16 +24,5 @@ podTemplate(
                         dockerApp = docker.build('jenkins-test/jenkins-test')
                     }
                 }
-
-                // 빌드된 docker container를 private registry ( harbor.softcamp.co.kr ) 에 푸쉬한다.
-                stage('Docker push to private registry') {
-                    container("docker") {
-                        docker.withRegistry('https://harbor.softcamp.co.kr', 'harbor') {
-                            // dockerApp.push("${env.BUILD_NUMBER}")
-                            dockerApp.push("${VERSION}")
-                            dockerApp.push("latest")
-                        }
-                    }
-                }
             }
         }
