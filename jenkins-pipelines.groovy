@@ -20,22 +20,9 @@ podTemplate(
                     checkout scm
                 }
 
-//                // 빌드된 docker container를 private registry ( harbor.softcamp.co.kr ) 에 푸쉬한다.
-//                stage('Docker Build & Push') {
-//                    container("docker") {
-//                        dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f Dockerfile .")
-//                        docker.withRegistry("${CONTAINER_REGISTRY_URL}", 'harbor') {
-//                            dockerApp.push("${VERSION}")
-//                            dockerApp.push("latest")
-//                        }
-//                    }
-//                }
-
                 stage('Docker Build') {
                     container("docker") {
-                        dir("${WORKSPACE}/${PROJECT_NAME}") {
-                            dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f jenkins.Dockerfile .")
-                        }
+                        dockerApp = docker.build('secaas/authorization-minhyeok')
                     }
                 }
 
