@@ -3,11 +3,13 @@ def label = "${PROJECT_NAME}-${BUILD_NUMBER}"
 podTemplate(
         label: label,
         containers: [
+                containerTemplate(name: 'maven', image: 'maven:3.8.3-openjdk-17', command: "cat", ttyEnabled: true),
                 containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true)
         ],
         // 현재 파드 내부에서 docker를 사용하기 위한 볼륨 마운트
         volumes: [
-                hostPathVolume(hostPath: "/var/run/docker.sock", mountPath: "/var/run/docker.sock")
+                hostPathVolume(hostPath: "/var/run/docker.sock", mountPath: "/var/run/docker.sock"),
+                persistentVolumeClaim(mountPath: '/root/.m2/repository', claimName: 'maven-repo-storage', readOnly: false)
         ]
 )
         {
