@@ -21,7 +21,7 @@ podTemplate(
                 // docker container 빌드 ( Dockerfile에서 Multi Stage를 사용하여 Maven 빌드를 수행 )
                 stage('Docker build') {
                     container("docker") {
-                        dockerApp = docker.build('jenkins-test/jenkins-test')
+                        dockerApp = docker.build('jenkins-authorization/jenkins-authorization')
                     }
                 }
             }
