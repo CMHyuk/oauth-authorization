@@ -18,10 +18,14 @@ podTemplate(
                     checkout scm
                 }
 
-                // docker container 빌드 ( Dockerfile에서 Multi Stage를 사용하여 Maven 빌드를 수행 )
-                stage('Docker build') {
+                // 빌드된 docker container를 private registry ( harbor.softcamp.co.kr ) 에 푸쉬한다.
+                stage('Docker Build & Push') {
                     container("docker") {
-                        dockerApp = docker.build('jenkins-authorization/jenkins-authorization')
+                        dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f Dockerfile .")
+                        docker.withRegistry("${CONTAINER_REGISTRY_URL}", 'harbor') {
+                            dockerApp.push("${VERSION}")
+                            dockerApp.push("latest")
+                        }
                     }
                 }
             }
