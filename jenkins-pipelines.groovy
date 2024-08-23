@@ -52,7 +52,7 @@ podTemplate(
                 // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
                 stage('Kubernetes deployment pod') {
                     container("kubectl") {
-                        sh "sed -i 's/BUILD_NUMBER/g' jenkins-deploy.yml"
+                        sh "sed -i 's/BUILD_NUMBER/${BUILD_NUMBER}/g' jenkins-deploy.yml"
                         sh "kubectl apply -f jenkins-deploy.yml"
                     }
                 }
