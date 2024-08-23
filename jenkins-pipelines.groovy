@@ -29,13 +29,14 @@ podTemplate(
                     container("docker") {
                         dir("${WORKSPACE}/${PROJECT_NAME}") {
                             docker.withRegistry('https://scr.softcamp.co.kr', 'harbor') {
+                                dockerApp.push("${VERSION}")
                                 dockerApp.push("latest")
                             }
                         }
                     }
                 }
 
-                // 기존에 배포되어 동작중이던 deployment를 삭제한다.
+//                // 기존에 배포되어 동작중이던 deployment를 삭제한다.
 //                try{
 //                    stage('Kubernetes destroy exist pod & service') {
 //                        container("kubectl") {
