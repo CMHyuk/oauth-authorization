@@ -29,7 +29,6 @@ podTemplate(
                     container("docker") {
                         dir("${WORKSPACE}/${PROJECT_NAME}") {
                             docker.withRegistry('https://scr.softcamp.co.kr', 'harbor') {
-                                dockerApp.push("${VERSION}")
                                 dockerApp.push("latest")
                             }
                         }
@@ -51,7 +50,7 @@ podTemplate(
                 // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
                 stage('Kubernetes deployment pod') {
                     container("kubectl") {
-                        sh "sed -i 's/BUILD_NUMBER/${VERSION}/g' jenkins-deploy.yml"
+                        sh "sed -i 's/BUILD_NUMBER/g' jenkins-deploy.yml"
                         sh "kubectl apply -f jenkins-deploy.yml"
                     }
                 }
