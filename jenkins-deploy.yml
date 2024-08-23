@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authorization-minhyeok
+  labels:
+    app: authorization-minhyeok
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authorization-minhyeok
+  template:
+    metadata:
+      labels:
+        app: authorization-minhyeok
+    spec:
+      containers:
+        - name: authorization-minhyeok
+          image: src.softcamp.co.kr/secaas/authorization-minhyeok:BUILD_NUMBER
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: regcred
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: authorization-minhyeok-service
+spec:
+  selector:
+    app: authorization-minhyeok
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
