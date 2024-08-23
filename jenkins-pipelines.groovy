@@ -37,18 +37,11 @@ podTemplate(
                     }
                 }
 
-                if (VERSION == CURRENT_VERSION) {
-                    // 빌드 버전과 현재 버전이 같으면 Re Deploy
-                    echo "The currently running deployment version and build version are the same."
-
-                    sh "kubectl rollout restart deploy ${PROJECT_NAME} -n ${KUBE_NAMESPACE}"
-                } else {
-                    // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
-                    stage('Kubernetes deployment pod') {
-                        container("kubectl") {
-                            sh "sed -i 's/BUILD_NUMBER/${BUILD_NUMBER}/g' jenkins-deploy.yml"
-                            sh "kubectl apply -f jenkins-deploy.yml"
-                        }
+                // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
+                stage('Kubernetes deployment pod') {
+                    container("kubectl") {
+                        sh "sed -i 's/BUILD_NUMBER/${BUILD_NUMBER}/g' jenkins-deploy.yml"
+                        sh "kubectl apply -f jenkins-deploy.yml"
                     }
                 }
             }
