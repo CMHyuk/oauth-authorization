@@ -36,16 +36,16 @@ podTemplate(
                 }
 
                 // 기존에 배포되어 동작중이던 deployment를 삭제한다.
-                try{
-                    stage('Kubernetes destroy exist pod & service') {
-                        container("kubectl") {
-                            sh "kubectl delete deployments authorization-minhyeok -n jenkins"
-                            sh "kubectl delete service authorization-minhyeok-service -n jenkins"
-                        }
-                    }
-                } catch(e) {
-                    sh "echo Does not exist kubernetes pod, service"
-                }
+//                try{
+//                    stage('Kubernetes destroy exist pod & service') {
+//                        container("kubectl") {
+//                            sh "kubectl delete deployments authorization-minhyeok -n jenkins"
+//                            sh "kubectl delete service authorization-minhyeok-service -n jenkins"
+//                        }
+//                    }
+//                } catch(e) {
+//                    sh "echo Does not exist kubernetes pod, service"
+//                }
 
                 // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
                 stage('Kubernetes deployment pod') {
