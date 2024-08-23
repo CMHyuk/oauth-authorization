@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: authorization-minhyeok
-          image: IMAGE_HOST/secaas/authorization-minhyeok:BUILD_NUMBER
+          image: https://src.softcamp.co.kr/secaas/authorization-minhyeok:BUILD_NUMBER
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
