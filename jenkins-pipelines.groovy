@@ -4,7 +4,8 @@ podTemplate(
         label: label,
         containers: [
                 containerTemplate(name: 'maven', image: 'maven:3.8.3-openjdk-17', command: "cat", ttyEnabled: true),
-                containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true)
+                containerTemplate(name: "docker", image: "docker", command: "cat", ttyEnabled: true),
+                containerTemplate(name: "kubectl", image: "bitnami/kubectl:latest", command: "cat", ttyEnabled: true)
         ],
         volumes: [
                 hostPathVolume(hostPath: "/var/run/docker.sock", mountPath: "/var/run/docker.sock"),
