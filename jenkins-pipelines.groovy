@@ -23,8 +23,13 @@ podTemplate(
 
                 stage('Docker Build & Push') {
                     container("docker") {
+
+                        // pom.xml을 이용한 라이브러리 정보 추출
+                        VERSION = readMavenPom().getVersion()
+
                         dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f Dockerfile .")
                         docker.withRegistry('https://scr.softcamp.co.kr', 'harbor') {
+                            dockerApp.push("${VERSION}")
                             dockerApp.push("latest")
                         }
                     }
@@ -32,11 +37,24 @@ podTemplate(
 
                 stage('Kubernetes Deploy') {
                     container("kubectl") {
-                        YAML_FILE = "jenkins-deploy.yml"
+                        CURRENT_VERSION = sh(script: "kubectl describe deployment ${PROJECT_NAME} -n ${KUBE_NAMESPACE} | grep Image: | awk -F ':' '{ print \$3 }'",
+                                returnStdout: true).trim()
 
-                        sh "sed -i 's/IMAGE_HOST/${KUBE_IMAGE_HOST}/g' ${YAML_FILE}"
-                        sh "sed -i 's/KUBE_NAMESPACE/${KUBE_NAMESPACE}/g' ${YAML_FILE}"
-                        sh "kubectl apply -f ${YAML_FILE}"
+                        echo "Current Running Deployment Version : ${CURRENT_VERSION}"
+
+                        if (VERSION == CURRENT_VERSION) {
+                            // 빌드 버전과 현재 버전이 같으면 Re Deploy
+                            echo "The currently running deployment version and build version are the same."
+
+                            sh "kubectl rollout restart deploy ${PROJECT_NAME} -n ${KUBE_NAMESPACE}"
+                        } else {
+                            YAML_FILE = "jenkins-deploy.yml"
+
+                            sh "sed -i 's/BUILD_NUMBER/${VERSION}/g' ${YAML_FILE}"
+                            sh "sed -i 's/IMAGE_HOST/${KUBE_IMAGE_HOST}/g' ${YAML_FILE}"
+                            sh "sed -i 's/KUBE_NAMESPACE/${KUBE_NAMESPACE}/g' ${YAML_FILE}"
+                            sh "kubectl apply -f ${YAML_FILE}"
+                        }
                     }
                 }
             }
