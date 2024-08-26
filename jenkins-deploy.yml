@@ -50,13 +50,14 @@ spec:
               cpu: 1000m
               memory: 2Gi
           ports:
-            - containerPort: 8080
+            - containerPort: 9000
           envFrom:
             - configMapRef:
                 name: authorization-minhyeok-config
           readinessProbe:
-            tcpSocket:
-              port: 8080
+            httpGet:
+              path: /authorization/api/version
+              port: 9000
             initialDelaySeconds: 5
             periodSeconds: 10
 ---
@@ -73,5 +74,5 @@ spec:
   ports:
     - protocol: TCP
       port: 8080
-      targetPort: 8080
+      targetPort: 9000
   type: LoadBalancer

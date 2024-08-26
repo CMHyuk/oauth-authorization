@@ -21,3 +21,6 @@ server:
   forward-headers-strategy: framework
   servlet:
     context-path: /authorization
+
+app:
+  version: 0.0.1
