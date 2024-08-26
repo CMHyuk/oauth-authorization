@@ -19,10 +19,10 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ojt_minhyeok_authorization
+  name: ojt-minhyeok-authorization
   namespace: KUBE_NAMESPACE
   labels:
-    app: ojt_minhyeok_authorization
+    app: ojt-minhyeok-authorization
 spec:
   strategy:
     type: RollingUpdate
@@ -32,14 +32,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ojt_minhyeok_authorization
+      app: ojt-minhyeok-authorization
   template:
     metadata:
       labels:
-        app: ojt_minhyeok_authorization
+        app: ojt-minhyeok-authorization
     spec:
       containers:
-        - name: ojt_minhyeok_authorization
+        - name: ojt-minhyeok-authorization
           image: IMAGE_HOST/secaas/ojt_minhyeok_authorization
           imagePullPolicy: Always
           resources:
@@ -63,13 +63,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ojt_minhyeok_authorization
+  name: ojt-minhyeok-authorization
   namespace: KUBE_NAMESPACE
   labels:
-    app: ojt_minhyeok_authorization
+    app: ojt-minhyeok-authorization
 spec:
   selector:
-    app: ojt_minhyeok_authorization
+    app: ojt-minhyeok-authorization
   ports:
     - protocol: TCP
       port: 8080
