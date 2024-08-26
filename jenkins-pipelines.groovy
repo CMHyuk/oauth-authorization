@@ -1,4 +1,4 @@
-def PROJECT_NAME = "authorization"
+def PROJECT_NAME = "ojt-authorization-minhyeok"
 def label = "${PROJECT_NAME}"
 podTemplate(
         label: label,

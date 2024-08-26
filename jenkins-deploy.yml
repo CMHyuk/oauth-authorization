@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: authorization-minhyeok
-          image: IMAGE_HOST/secaas/authorization-minhyeok
+          image: IMAGE_HOST/secaas/ojt-authorization-minhyeok
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
