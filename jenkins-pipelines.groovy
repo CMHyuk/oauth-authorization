@@ -16,7 +16,6 @@ podTemplate(
         {
             node(label) {
 
-                // 젠킨스 빌드에 설정된 git 주소를 사용하여 소스코드 가져오기
                 stage('Git Pull') {
                     checkout scm
                 }
