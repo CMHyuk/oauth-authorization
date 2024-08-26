@@ -21,27 +21,39 @@ podTemplate(
                     checkout scm
                 }
 
-                stage('Docker Build') {
+                stage('Docker Build & Push') {
                     container("docker") {
-                        dockerApp = docker.build('secaas/authorization-minhyeok')
-                    }
-                }
-
-                stage('Docker Push') {
-                    container("docker") {
-                        dir("${WORKSPACE}/${PROJECT_NAME}") {
-                            docker.withRegistry('https://scr.softcamp.co.kr', 'harbor') {
-                                dockerApp.push("latest")
-                            }
+                        dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f Dockerfile .")
+                        docker.withRegistry("${CONTAINER_REGISTRY_URL}", 'harbor') {
+                            dockerApp.push("${VERSION}")
+                            dockerApp.push("latest")
                         }
                     }
                 }
 
-                // 빌드된 docker container를 사용하는 deployment를 배포를 한다.
-                stage('Kubernetes deployment pod') {
+                stage('Kubernetes Deploy') {
                     container("kubectl") {
-                        sh "sed -i 's/BUILD_NUMBER/${BUILD_NUMBER}/g' jenkins-deploy.yml"
-                        sh "kubectl apply -f jenkins-deploy.yml"
+
+                        CURRENT_VERSION = sh(script: "kubectl describe deployment ${PROJECT_NAME} -n ${KUBE_NAMESPACE} | grep Image: | awk -F ':' '{ print \$3 }'",
+                                returnStdout: true).trim()
+
+                        echo "Current Running Deployment Version : ${CURRENT_VERSION}"
+
+                        if (VERSION == CURRENT_VERSION) {
+                            // 빌드 버전과 현재 버전이 같으면 Re Deploy
+                            echo "The currently running deployment version and build version are the same."
+
+                            sh "kubectl rollout restart deploy ${PROJECT_NAME} -n ${KUBE_NAMESPACE}"
+                        } else {
+                            // 빌드 버전과 현재 버전이 같지 않으면 업데이트된 yaml 적용
+                            echo "The currently running deployment version and build version are the not same."
+
+                            YAML_FILE = "jenkins-deploy.yml"
+
+                            sh "sed -i 's/IMAGE_HOST/${KUBE_IMAGE_HOST}/g' ${YAML_FILE}"
+                            sh "sed -i 's/KUBE_NAMESPACE/${KUBE_NAMESPACE}/g' ${YAML_FILE}"
+                            sh "kubectl apply -f ${YAML_FILE}"
+                        }
                     }
                 }
             }
