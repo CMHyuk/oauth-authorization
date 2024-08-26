@@ -1,4 +1,4 @@
-def PROJECT_NAME = "ojt-authorization-minhyeok"
+def PROJECT_NAME = "ojt_minhyeok_authorization"
 def label = "${PROJECT_NAME}"
 podTemplate(
         label: label,
@@ -32,8 +32,6 @@ podTemplate(
 
                 stage('Kubernetes Deploy') {
                     container("kubectl") {
-                        echo "The currently running deployment version and build version are the not same."
-
                         YAML_FILE = "jenkins-deploy.yml"
 
                         sh "sed -i 's/IMAGE_HOST/${KUBE_IMAGE_HOST}/g' ${YAML_FILE}"
