@@ -50,7 +50,7 @@ spec:
               cpu: 1000m
               memory: 2Gi
           ports:
-            - containerPort: 9004
+            - containerPort: 9000
           envFrom:
             - configMapRef:
                 name: authorization-minhyeok-config
@@ -75,5 +75,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 9004
+      targetPort: 9000
   type: ClusterIP
