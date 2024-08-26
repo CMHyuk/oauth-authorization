@@ -73,6 +73,6 @@ spec:
     app: ojt-minhyeok-authorization
   ports:
     - protocol: TCP
-      port: 8080
+      port: 9000
       targetPort: 9000
   type: LoadBalancer
