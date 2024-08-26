@@ -58,7 +58,8 @@ spec:
             httpGet:
               path: /authorization/api/version
               port: 9000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
             periodSeconds: 10
 ---
 apiVersion: v1
