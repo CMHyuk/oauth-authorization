@@ -24,6 +24,11 @@ metadata:
   labels:
     app: authorization-minhyeok
 spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1         # 롤링 업데이트 중 최대 몇 개를 생성할 지
+      maxUnavailable: 1
   replicas: 1
   selector:
     matchLabels:
@@ -37,6 +42,13 @@ spec:
         - name: authorization-minhyeok
           image: IMAGE_HOST/secaas/ojt-authorization-minhyeok
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
           ports:
             - containerPort: 8080
           envFrom:
