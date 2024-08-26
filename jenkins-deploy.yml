@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
         - name: ojt-minhyeok-authorization
-          image: IMAGE_HOST/secaas/ojt-minhyeok-authorization
+          image: IMAGE_HOST/secaas/ojt-minhyeok-authorization:BUILD_NUMBER
           imagePullPolicy: Always
           resources:
             requests:
