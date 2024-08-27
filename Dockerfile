@@ -10,7 +10,7 @@ RUN mvn -e -B dependency:resolve dependency:resolve-plugins
 COPY src ./src
 RUN mvn -e -B package -Dmaven.test.skip=true
 
-FROM amazoncorretto:17-alpine-jdk as DOCKER_BUILDdoc
+FROM amazoncorretto:17-alpine-jdk as DOCKER_BUILD
 
-COPY --from=MAVEN_BUILD /app/target/*.jar /app/authorization-minhyeok.jar
-CMD ["java", "-jar", "/app/authorization-minhyeok.jar"]
+COPY --from=MAVEN_BUILD /app/target/*.jar /app/ojt-minhyeok-authorization.jar
+CMD ["java", "-jar", "/app/ojt-minhyeok-authorization.jar"]
