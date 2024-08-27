@@ -1,16 +1,9 @@
-FROM amazoncorretto:17-alpine-jdk as MAVEN_BUILD
+FROM amazoncorretto:17-alpine-jdk
+
 WORKDIR /app
 
-# Install Maven
-RUN apk add --no-cache maven
+COPY target/*.jar /app/ojt-minhyeok-authorization.jar
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
-COPY pom.xml .
-RUN mvn -e -B dependency:resolve dependency:resolve-plugins
-
-COPY src ./src
-RUN mvn -e -B package -Dmaven.test.skip=true
-
-FROM amazoncorretto:17-alpine-jdk as DOCKER_BUILD
-
-COPY --from=MAVEN_BUILD /app/target/*.jar /app/ojt-minhyeok-authorization.jar
-CMD ["java", "-jar", "/app/ojt-minhyeok-authorization.jar"]
+ENTRYPOINT ["/app/start.sh"]
