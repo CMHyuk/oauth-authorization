@@ -49,7 +49,7 @@ podTemplate(
                 stage('Docker Build & Push') {
                     container("docker") {
                         dockerApp = docker.build("secaas/${PROJECT_NAME}", "--no-cache -f Dockerfile .")
-                        docker.withRegistry(${CONTAINER_REGISTRY_URL}, 'harbor') {
+                        docker.withRegistry('https://scr.softcamp.co.kr', 'harbor') {
                             dockerApp.push("${VERSION}")
                             dockerApp.push("latest")
                         }
