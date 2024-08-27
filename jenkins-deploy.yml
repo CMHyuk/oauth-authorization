@@ -4,7 +4,6 @@ metadata:
   name: authorization-minhyeok-config
   namespace: KUBE_NAMESPACE
 data:
-#  SPRING_PROFILES_ACTIVE: "dev"
   ELASTIC_HOST: "10.30.10.19"
   ELASTIC_PORT: "9200"
   KUBERNETES_CLUSTER_NAMESPACE: ""
