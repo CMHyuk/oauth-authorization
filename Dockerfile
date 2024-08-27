@@ -2,8 +2,6 @@ FROM amazoncorretto:17-alpine-jdk
 
 WORKDIR /app
 
-COPY target/*.jar /app/ojt-minhyeok-authorization.jar
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+COPY /target/*.jar /app/ojt-minhyeok-authorization.jar
 
-ENTRYPOINT ["/app/start.sh"]
+CMD ["java", "-jar", "/app/ojt-minhyeok-authorization.jar"]
