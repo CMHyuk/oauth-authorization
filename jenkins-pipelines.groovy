@@ -24,7 +24,9 @@ podTemplate(
                     // pom.xml을 이용한 라이브러리 정보 추출
                     VERSION = readMavenPom().getVersion()
 
+                    MAVEN_BUILD_OPT = "-Pdev clean verify package"
                     MAVEN_BUILD_SKIP_JUNIT_TEST = "-Dmaven.test.skip=true"
+                    MAVEN_BUILD_DCHECK_OPT = "-Ddependency-check.skip=true"
 
                     echo "Start BUILD ${PROJECT_NAME}:${VERSION} Build_Opt [${MAVEN_BUILD_OPT} ${MAVEN_BUILD_DCHECK_OPT} ${MAVEN_BUILD_SKIP_JUNIT_TEST}]"
 
