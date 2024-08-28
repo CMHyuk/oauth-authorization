@@ -80,7 +80,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-nginx-minhyeok
+  name: ojt-minhyeok-authorization
   namespace: KUBE_NAMESPACE
 spec:
   ingressClassName: ingress-nginx-minhyeok
