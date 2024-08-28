@@ -80,19 +80,22 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ojt-minhyeok-authorization-ingress
-  namespace: KUBE_NAMESPACE
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: ingress-nginx-minhyeok
+  namespace: ingress-nginx-minhyeok
 spec:
+  ingressClassName: ingress-nginx-minhyeok
   rules:
-    - host: ojt.minhyeok.authorization
+    - host: ojt-minhyeok-authorization.softcamp.co.kr
       http:
         paths:
-          - path: /
+          - path: /authorization
             pathType: Prefix
             backend:
               service:
                 name: ojt-minhyeok-authorization
                 port:
-                  number: 80
+                  number: 9000
+  tls:
+    - hosts:
+        - minhyeok-authorization.softcamp.co.kr
+      secretName: ca-key-pair-softcamp
