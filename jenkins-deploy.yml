@@ -94,7 +94,7 @@ spec:
               service:
                 name: ojt-minhyeok-authorization
                 port:
-                  number: 9000
+                  number: 80
   tls:
     - hosts:
         - minhyeok-authorization.softcamp.co.kr
