@@ -81,11 +81,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx-minhyeok
-  namespace: dev
+  namespace: KUBE_NAMESPACE
 spec:
   ingressClassName: ingress-nginx-minhyeok
   rules:
-    - host: ojt-minhyeok-authorization.softcamp.co.kr
+    - host: minhyeok-authorization.softcamp.co.kr
       http:
         paths:
           - path: /authorization
@@ -95,6 +95,7 @@ spec:
                 name: ojt-minhyeok-authorization
                 port:
                   number: 80
+
   tls:
     - hosts:
         - minhyeok-authorization.softcamp.co.kr
