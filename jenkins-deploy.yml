@@ -81,7 +81,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx-minhyeok
-  namespace: KUBE_NAMESPACE
+  namespace: dev
 spec:
   ingressClassName: ingress-nginx-minhyeok
   rules:
