@@ -76,3 +76,23 @@ spec:
       port: 80
       targetPort: 9000
   type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ojt-minhyeok-authorization-ingress
+  namespace: KUBE_NAMESPACE
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: ojt.minhyeok.authorization
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ojt-minhyeok-authorization
+                port:
+                  number: 80
