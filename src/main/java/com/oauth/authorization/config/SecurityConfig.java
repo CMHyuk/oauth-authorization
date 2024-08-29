@@ -48,11 +48,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthorizationServerSettings providerSettings() {
-        return AuthorizationServerSettings.builder().issuer("http://localhost:9000").build();
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
