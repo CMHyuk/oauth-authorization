@@ -1,31 +1,17 @@
 spring:
   profiles:
     active: local
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
-  data:
-    redis:
-      host: 10.30.10.19
-      port: 6379
-      password: 1234
 
-elasticsearch:
-  host: ${ELASTIC_HOST:localhost}
-  port: ${ELASTIC_PORT:9200}
-  expected-http-response-time-millis: ${ELASTIC_EXPECTED_HTTP_RESPONSE_TIME_MS:50}
-  expected-throughput-in-request-per-seconds: ${ELASTIC_EXPECTED_REQUEST_PER_SEC:500}
-  socket-timeout-seconds: ${ELASTIC_SOCKET_TIMEOUT_SEC:60}
-  connection-timeout-seconds: ${ELASTIC_CONNECTION_TIMEOUT_SEC:30}
-  connection-request-timeout-seconds: ${ELASTIC_CONNECTION_REQUEST_TIMEOUT_SEC:30}
-  keep-alive-strategy-time-minutes: ${ELASTIC_KEEP_ALIVE_STRATEGY_TIME_MIN:5}
-  scheme: http
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: application-local.yml
 
-server:
-  port: 9000
-  forward-headers-strategy: framework
-  servlet:
-    context-path: /authorization
-
-app:
-  version: 0.0.1
+---
+spring:
+  config:
+    activate:
+      on-profile: deploy
+    import: application-deploy.yml
