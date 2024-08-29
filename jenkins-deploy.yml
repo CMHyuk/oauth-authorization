@@ -2,11 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: authorization-minhyeok-config
-  namespace: KUBE_NAMESPACE
+  namespace: dev
 data:
   ELASTIC_HOST: "10.30.10.19"
   ELASTIC_PORT: "9200"
-  KUBERNETES_CLUSTER_NAMESPACE: ""
+  KUBERNETES_CLUSTER_NAMESPACE: "dev"
   JAVA_OPTS: "-Xms2G -Xmx2G"
   ELASTIC_EXPECTED_HTTP_RESPONSE_TIME_MS: "50"
   ELASTIC_EXPECTED_REQUEST_PER_SEC: "500"
@@ -14,6 +14,12 @@ data:
   ELASTIC_CONNECTION_TIMEOUT_SEC: "30"
   ELASTIC_CONNECTION_REQUEST_TIMEOUT_SEC: "30"
   ELASTIC_KEEP_ALIVE_STRATEGY_TIME_MIN: "5"
+  REDIS_USE: "true"
+  REDIS_HOST: "ojt-minhyeok-authorization-redis.KUBE_NAMESPACE.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_PASSWORD: "1234"
+  REDIS_CACHE_EXPIRATION_TIME_SECONDS: "60"
+  RESOURCE_API_HOST: "http:/ojt-minhyeok-authorization.KUBE_NAMESPACE.svc.cluster.local"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -76,27 +82,3 @@ spec:
       port: 80
       targetPort: 9000
   type: ClusterIP
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: ojt-minhyeok-authorization
-  namespace: KUBE_NAMESPACE
-spec:
-  ingressClassName: ingress-nginx-minhyeok
-  rules:
-    - host: minhyeok-authorization.softcamp.co.kr
-      http:
-        paths:
-          - path: /authorization
-            pathType: Prefix
-            backend:
-              service:
-                name: ojt-minhyeok-authorization
-                port:
-                  number: 80
-
-  tls:
-    - hosts:
-        - minhyeok-authorization.softcamp.co.kr
-      secretName: ca-key-pair-softcamp

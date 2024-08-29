@@ -4,6 +4,11 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+  data:
+    redis:
+      host: 10.30.10.19
+      port: 6379
+      password: 1234
 
 elasticsearch:
   host: ${ELASTIC_HOST:localhost}
