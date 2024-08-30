@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: deploy
+    active: dev
   data:
     redis:
       host: 10.30.10.19

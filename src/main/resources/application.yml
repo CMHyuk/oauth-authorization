@@ -14,4 +14,4 @@ spring:
   config:
     activate:
       on-profile: deploy
-    import: application-deploy.yml
+    import: application-dev.yml
