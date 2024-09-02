@@ -1,12 +1,22 @@
 spring:
-  profiles:
-    active: local
-  thymeleaf:
-    prefix: classpath:/templates/
-    suffix: .html
+  application:
+    name: minhyeok-authorization
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+
+server:
+  port: 9000
+  servlet:
+    context-path: /authorization
+
+app:
+  version: @project.version@
 
 elasticsearch:
-  host: ${ELASTIC_HOST:localhost}
+  host: ${ELASTIC_HOST}
   port: ${ELASTIC_PORT:9200}
   expected-http-response-time-millis: ${ELASTIC_EXPECTED_HTTP_RESPONSE_TIME_MS:50}
   expected-throughput-in-request-per-seconds: ${ELASTIC_EXPECTED_REQUEST_PER_SEC:500}
@@ -15,9 +25,3 @@ elasticsearch:
   connection-request-timeout-seconds: ${ELASTIC_CONNECTION_REQUEST_TIMEOUT_SEC:30}
   keep-alive-strategy-time-minutes: ${ELASTIC_KEEP_ALIVE_STRATEGY_TIME_MIN:5}
   scheme: http
-
-server:
-  port: 9000
-  forward-headers-strategy: framework
-  servlet:
-    context-path: /authorization

@@ -15,7 +15,7 @@ public class TimeLogAspect {
 
     private final TimeLogTemplate timeLogTemplate;
 
-    @Around("com.oauth.resource.global.log.TimeLogPointCut.timeLogPointCut()")
+    @Around("com.oauth.authorization.global.log.TimeLogPointCut.timeLogPointCut()")
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         return timeLogTemplate.executeWithResult(
                 joinPoint::proceed,

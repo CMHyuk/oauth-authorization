@@ -1,0 +1,8 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      password: 1234
+
+elasticsearch:
+  host: localhost

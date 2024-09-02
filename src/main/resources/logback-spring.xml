@@ -5,7 +5,7 @@
     <property name="LOG_PATTERN"
               value="%magenta([%X{CORRELATION_ID:-NO CORRELATION ID}]) %yellow([%d{yyyy-MM-dd HH:mm:ss, ${logback.timezone:-Asia/Seoul}}]) %green(%thread) %highlight(%-5level) %boldWhite([%C.%M:%L]) %n : %msg%n"/>
 
-    <springProfile name="local">
+    <springProfile name="local, dev">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
                 <pattern>${LOG_PATTERN}</pattern>

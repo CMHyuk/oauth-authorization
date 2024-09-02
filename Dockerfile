@@ -11,6 +11,6 @@ COPY src ./src
 RUN mvn -e -B package -Dmaven.test.skip=true
 
 FROM amazoncorretto:17-alpine-jdk as DOCKER_BUILD
-WORKDIR /app
-COPY --from=MAVEN_BUILD /app/target/authorization-*.jar /app/authorization.jar
-ENTRYPOINT ["java", "-jar", "authorization-minhyeok.jar"]
+
+COPY --from=MAVEN_BUILD /app/target/*.jar /app/ojt-minhyeok-authorization.jar
+CMD ["java", "-jar", "/app/ojt-minhyeok-authorization.jar"]

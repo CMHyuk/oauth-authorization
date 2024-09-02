@@ -37,7 +37,7 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/login").permitAll()
+                                .requestMatchers("/login", "/api/version", "/api/name").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
@@ -45,11 +45,6 @@ public class SecurityConfig {
                 )
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
-    }
-
-    @Bean
-    public AuthorizationServerSettings providerSettings() {
-        return AuthorizationServerSettings.builder().issuer("http://localhost:9000").build();
     }
 
     @Bean
