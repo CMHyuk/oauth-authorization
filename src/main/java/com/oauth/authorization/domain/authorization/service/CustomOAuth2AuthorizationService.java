@@ -15,6 +15,10 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.stereotype.Component;
 
+/**
+ * OAuth2Authorization : 클라이언트의 인가 상태를 유지하는 클래스 (token, scope, clientId ...)
+ * OAuth2AuthorizationService : 새로운 OAuth2Authorization을 저장하고 기존 OAuth2Authorization을 검색하는 클래스
+ */
 @Component
 @RequiredArgsConstructor
 public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationService {
@@ -79,6 +83,7 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     private void saveNewOAuth2Authorization(OAuth2Authorization authorization, String tenantId, String authorizationId) {
         OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization.getToken(OAuth2AuthorizationCode.class);
         CustomOAuth2Authorization newCustomOAuth2Authorization = customOAuth2AuthorizationMapper.create(
+                tenantId,
                 token,
                 authorization.getAttribute("state"),
                 authorizationId,
