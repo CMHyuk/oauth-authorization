@@ -17,14 +17,12 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 @Setting(settingPath = "lower_case_normalizer_setting.json")
 public class CustomOAuth2Authorization extends BaseEntity {
 
-    private String tenantId;
     private String code;
     private String state;
     private String authorizationId;
     private String oAuth2Authorization;
 
-    public CustomOAuth2Authorization(String tenantId, String code, String state, String authorizationId, OAuth2Authorization oAuth2Authorization) {
-        this.tenantId = tenantId;
+    public CustomOAuth2Authorization(String code, String state, String authorizationId, OAuth2Authorization oAuth2Authorization) {
         this.code = code;
         this.state = state;
         this.authorizationId = authorizationId;

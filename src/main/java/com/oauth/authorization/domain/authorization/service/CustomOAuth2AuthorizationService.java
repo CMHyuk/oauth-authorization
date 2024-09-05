@@ -83,7 +83,6 @@ public class CustomOAuth2AuthorizationService implements OAuth2AuthorizationServ
     private void saveNewOAuth2Authorization(OAuth2Authorization authorization, String tenantId, String authorizationId) {
         OAuth2Authorization.Token<OAuth2AuthorizationCode> token = authorization.getToken(OAuth2AuthorizationCode.class);
         CustomOAuth2Authorization newCustomOAuth2Authorization = customOAuth2AuthorizationMapper.create(
-                tenantId,
                 token,
                 authorization.getAttribute("state"),
                 authorizationId,
