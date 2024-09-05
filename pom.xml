@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.example</groupId>
     <artifactId>AuthorizationServer</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>AuthorizationServer</name>
     <description>AuthorizationServer</description>
     <url/>
